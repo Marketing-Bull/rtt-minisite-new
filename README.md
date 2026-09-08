@@ -154,7 +154,10 @@ Before merging:
 
 ## Deployment
 
-Cloudflare static-assets Worker:
+Vercel (Git integration): `vercel.json` builds with `node generate.js`, checks links, and
+serves `public/` with the same cache and security headers as `public/_headers`.
+
+Cloudflare static-assets Worker (alternative):
 
 - Worker name: `rtt-minisite-new`
 - Asset directory: `public`
