@@ -1,5 +1,5 @@
 {
-  "name": "rtt-minisite-1b",
+  "name": "rtt-minisite-new",
   "version": "1.0.0",
   "private": true,
   "description": "Mobile-first product minisite for Rock The Treatment in the 1b (High-Conversion) design, deployed as a Cloudflare static-assets Worker.",

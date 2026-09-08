@@ -1,4 +1,4 @@
-# RTT Minisite — 1b (High-Conversion) design
+# RTT Minisite (new) — 1b High-Conversion design
 
 Mobile-first product landing pages for
 [Rock The Treatment](https://www.rockthetreatment.com/), rendered in the **1b
@@ -156,7 +156,7 @@ Before merging:
 
 Cloudflare static-assets Worker:
 
-- Worker name: `rtt-minisite-1b`
+- Worker name: `rtt-minisite-new`
 - Asset directory: `public`
 - Configuration: `wrangler.jsonc`
 - Production command: `npm run deploy`
