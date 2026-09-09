@@ -4,7 +4,6 @@
   "installCommand": "echo 'no install step: the generator has no dependencies'",
   "buildCommand": "node generate.js && node tools/check-links.js",
   "outputDirectory": "public",
-  "cleanUrls": true,
   "headers": [
     {
       "source": "/(.*)",
