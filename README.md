@@ -242,8 +242,53 @@ What does need to be true, in order of how badly it breaks things:
    `add_to_cart`; `begin_checkout` and `purchase` come from WooCommerce. Revenue
    attribution is only end-to-end once that side emits GA4 ecommerce events too.
 
-Listing both hosts under "Configure your domains" is harmless, but it is not
-what makes this work and is not a substitute for the three items above.
+Listing both hosts under "Configure your domains" is not what makes the session
+carry across — but do list them anyway: Consent Mode's `url_passthrough` uses
+that list to decide which links may carry the `gclid` in the URL, which is how a
+Google Ads click stays attributable across the `m.` -> `www.` hop for a visitor
+who declined cookies.
+
+## Consent Mode v2
+
+These pages serve EEA traffic, so `generate.js` emits Consent Mode v2 defaults
+**before** the GTM container — Google requires a consent state to exist before
+any Google tag runs. Everything non-essential starts `denied` in the EU 27, the
+rest of the EEA, the UK and Switzerland (`CONSENT_DENIED_REGIONS` in
+`generate.js`); `security_storage` is always granted, and defaults outside those
+regions are granted. `wait_for_update: 500` holds tags briefly so a fast choice
+is not missed.
+
+The generator also sets `ads_data_redaction` (strips ad click identifiers from
+pings while `ad_storage` is denied) and `url_passthrough` (carries the `gclid`
+in the URL when cookies are unavailable).
+
+Nothing is emitted at all when `RTT_GTM_ID` is unset.
+
+### This does not include a CMP
+
+`generate.js` sets the consent *defaults*. It does not load a Consent Management
+Platform, and nothing here can. Without one, nothing ever calls
+`gtag('consent', 'update', ...)`, consent stays denied for every EEA visitor,
+and no measurement is collected from them.
+
+Before running EEA ads you need:
+
+1. **A Google-certified CMP** on these pages — added through the GTM container
+   or the page itself. Google requires a certified CMP for ads served in the
+   EEA, and TCF integration if you are using the TCF path.
+2. **The same CMP on `www.rockthetreatment.com`**, with its consent cookie
+   written at `.rockthetreatment.com` so a visitor who consents here is not
+   prompted again at checkout — and so their choice actually applies to the
+   conversion tag.
+3. **A decision on Basic vs Advanced consent mode.** The defaults emitted here
+   support Advanced (tags load and send cookieless pings when denied, which is
+   what enables conversion modeling). Basic means blocking the container
+   entirely until consent, which forgoes modeling. Advanced generally performs
+   better for ads; Basic is the more conservative reading. This is a decision
+   for whoever signs off on privacy, not a technical default.
+
+Verify with GTM Preview and the Google Tag Assistant that consent shows as
+denied before a choice and updates after it.
 
 ### Not tracked
 

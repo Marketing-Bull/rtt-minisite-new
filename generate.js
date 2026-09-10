@@ -29,7 +29,8 @@ const ALLOW_INDEXING = false;
 // event set (view_item, add_to_cart, product_gallery_view, faq_open,
 // rating_click, celebration_bell, addon_click) into window.dataLayer — but
 // without a container nothing consumes them, so none of it reaches GA4.
-// Set RTT_GTM_ID (or hardcode below) to emit the container.
+// Set RTT_GTM_ID (or hardcode below) to emit the container. The container is
+// always preceded by the Consent Mode v2 defaults below.
 //
 // Cart/checkout lives on www.rockthetreatment.com while these pages are served
 // from m.rockthetreatment.com. Those are subdomains of one registrable domain,
@@ -189,7 +190,42 @@ const DEFAULT_ADD_ONS = [
   'Warmies® + YOU ROCK! Stone',
 ];
 
-const gtmHead = GTM_ID ? `<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');</script>\n` : '';
+// ---- Consent Mode v2 -------------------------------------------------------
+// Google requires a consent state to exist BEFORE any Google tag runs, so this
+// block is emitted ahead of the GTM container. Everything non-essential starts
+// denied in the regions below; a Consent Management Platform then calls
+// gtag('consent','update',...) once the visitor chooses, and wait_for_update
+// holds tags briefly so a fast choice is not missed.
+//
+// This block is CMP-agnostic and required whichever CMP is used. It does NOT
+// load a CMP. Without one nothing ever calls 'update', consent stays denied,
+// and no measurement is collected in these regions. Add the CMP via the GTM
+// container (or the page) and use the same CMP on www.rockthetreatment.com so
+// a visitor who consents here is not prompted again at checkout.
+//
+// EU 27 + the rest of the EEA (IS, LI, NO), plus the UK and Switzerland, which
+// have their own equivalent regimes. Outside these, defaults are granted --
+// review that with whoever signs off on privacy before launch.
+const CONSENT_DENIED_REGIONS = [
+  'AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT',
+  'LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE',
+  'IS','LI','NO','GB','CH',
+];
+
+// ads_data_redaction strips ad click identifiers from pings while ad_storage is
+// denied. url_passthrough carries the gclid in the URL when cookies are not
+// available, which is what keeps a Google Ads click attributable across the
+// m. -> www. hop for a visitor who declined cookies. For that to reach the
+// store, list both hosts under the GA4 stream's "Configure your domains".
+const consentHead = GTM_ID ? `<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',functionality_storage:'denied',personalization_storage:'denied',security_storage:'granted',region:${JSON.stringify(CONSENT_DENIED_REGIONS)},wait_for_update:500});
+gtag('consent','default',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted',functionality_storage:'granted',personalization_storage:'granted',security_storage:'granted'});
+gtag('set','ads_data_redaction',true);
+gtag('set','url_passthrough',true);
+</script>\n` : '';
+
+const gtmHead = GTM_ID ? consentHead + `<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');</script>\n` : '';
 const gtmBody = GTM_ID ? `<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${GTM_ID}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>\n` : '';
 
 const FONTS = 'https://fonts.googleapis.com/css2?family=Catamaran:wght@400;500;600;700;800&display=swap';
