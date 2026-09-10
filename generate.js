@@ -26,15 +26,18 @@ fs.mkdirSync(outDir, { recursive: true });
 const ALLOW_INDEXING = false;
 
 // Google Tag Manager container for the minisite. The pages already push a full
-// event set (view_item, add_to_cart, add_to_cart_sticky, product_gallery_view,
-// faq_open, rating_click, celebration_bell, addon_click) into window.dataLayer —
-// but without a container nothing consumes them, so none of it reaches GA4.
+// event set (view_item, add_to_cart, product_gallery_view, faq_open,
+// rating_click, celebration_bell, addon_click) into window.dataLayer — but
+// without a container nothing consumes them, so none of it reaches GA4.
 // Set RTT_GTM_ID (or hardcode below) to emit the container.
 //
-// Cart/checkout lives on a different host (www.rockthetreatment.com), so the GA4
-// config tag in this container MUST enable cross-domain measurement for both
-// m.rockthetreatment.com and www.rockthetreatment.com — otherwise the session
-// splits at the exact moment of conversion and add_to_cart never ties to revenue.
+// Cart/checkout lives on www.rockthetreatment.com while these pages are served
+// from m.rockthetreatment.com. Those are subdomains of one registrable domain,
+// so the _ga cookie is shared and the session carries across on its own — no
+// cross-domain linker needed. What DOES matter: both hosts must send to the
+// same GA4 measurement ID, and rockthetreatment.com belongs in the stream's
+// unwanted-referrals list so the m. -> www. hop is not logged as a referral and
+// credited away from the original campaign. See README for the full setup.
 const GTM_ID = process.env.RTT_GTM_ID || '';
 
 const { wwwBase, mBase, imageBase, logo, itemImages, upsellProducts, faqs, radiationFaqs, products } = data;

@@ -218,12 +218,32 @@ Flat parameters, no `ecommerce` object.
 | `addon_click` | an "Encore" add-on is clicked | `href` |
 | `faq_open` | an FAQ row is expanded | `question` |
 
-### Cross-domain measurement is required
+### Connecting this to the store on www
 
 The cart and checkout live on `www.rockthetreatment.com` while these pages are
-served from `m.rockthetreatment.com`. The GA4 config tag must list both hosts,
-otherwise the session splits at the moment of conversion and `add_to_cart` never
-ties to revenue.
+served from `m.rockthetreatment.com`. Both are subdomains of one registrable
+domain, so GA4 writes its `_ga` cookie at `.rockthetreatment.com` and the client
+ID and session carry across the hop automatically. **Cross-domain measurement
+(the `_gl` linker) is not needed** — that mechanism is for genuinely different
+domains.
+
+What does need to be true, in order of how badly it breaks things:
+
+1. **Both hosts must send to the same GA4 measurement ID.** This is the real
+   requirement. If this container reports to a different property than the
+   WooCommerce site, nothing stitches and `add_to_cart` here can never tie to
+   revenue there. Check the measurement ID in the GA4 tag on `www` before
+   configuring anything else.
+2. **Add `rockthetreatment.com` to the stream's unwanted-referrals list**
+   (GA4 Admin → Data Streams → the web stream → Configure tag settings → List
+   unwanted referrals). Without it the `m.` → `www.` hop can be recorded as a
+   referral and reattribute the session away from the campaign that earned it.
+3. **`purchase` must fire on `www`.** These pages can only report up to
+   `add_to_cart`; `begin_checkout` and `purchase` come from WooCommerce. Revenue
+   attribution is only end-to-end once that side emits GA4 ecommerce events too.
+
+Listing both hosts under "Configure your domains" is harmless, but it is not
+what makes this work and is not a substitute for the three items above.
 
 ### Not tracked
 
