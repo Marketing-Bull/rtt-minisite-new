@@ -410,7 +410,7 @@ function generatePage(product) {
       </div>`;
 
   const buyRow = `      <div class="buy-row" id="buyRow">
-        <a class="atc js-cart-btn" href="${cartUrl}" data-track="add_to_cart">Add to Cart · ${escHtml(price)}</a>
+        <a class="atc js-cart-btn" href="${cartUrl}" data-cta-location="inline">Add to Cart · ${escHtml(price)}</a>
       </div>
       <div class="buy-note"><span>🔒 Secure checkout</span><span class="r">${stockNote ? escHtml(stockNote) : 'Free gift note at checkout'}</span></div>`;
 
@@ -467,7 +467,7 @@ ${cat.items.map(it => `      <li>${picture(itemImg(it.name), { alt: '', width: 4
   <aside class="sticky" id="stickyBar" aria-label="Purchase" aria-hidden="true">
     <div class="row">
       <div class="meta"><div class="t">${escHtml(ui.stickyLabel || product.title)}</div><div class="p">${escHtml(price)}</div></div>
-      <a class="atc js-cart-btn" href="${cartUrl}" data-track="add_to_cart_sticky">Add to Cart</a>
+      <a class="atc js-cart-btn" href="${cartUrl}" data-cta-location="sticky">Add to Cart</a>
     </div>
   </aside>` : '';
 
@@ -545,11 +545,41 @@ ${stickyHtml}
   var PRODUCT_NAME = ${JSON.stringify(product.title)};
   var UNIT_PRICE = ${priceNum};
   var GALLERY = ${JSON.stringify(gallery)};
+  var CURRENCY = 'USD';
+  var ITEM_CATEGORY = ${JSON.stringify(isRadiation ? 'Radiation Care Packages' : 'Chemo Care Packages')};
   window.dataLayer = window.dataLayer || [];
+
+  // Custom (non-ecommerce) events — flat parameters.
   function track(eventName, detail){
     window.dataLayer.push(Object.assign({event:eventName, product_id:PRODUCT_ID, product_name:PRODUCT_NAME}, detail || {}));
   }
-  track('view_item', {value: UNIT_PRICE});
+
+  // GA4 ecommerce events. The items array is what populates GA4's ecommerce
+  // reports (item revenue, cart-to-view rate); value on its own leaves them
+  // empty. Pushing ecommerce:null first clears the previous ecommerce object
+  // so its fields cannot bleed into the next event.
+  function trackEcommerce(eventName, quantity, detail){
+    window.dataLayer.push({ecommerce: null});
+    window.dataLayer.push(Object.assign({
+      event: eventName,
+      product_id: PRODUCT_ID,
+      product_name: PRODUCT_NAME,
+      ecommerce: {
+        currency: CURRENCY,
+        value: Math.round(UNIT_PRICE * quantity * 100) / 100,
+        items: [{
+          item_id: String(PRODUCT_ID),
+          item_name: PRODUCT_NAME,
+          item_brand: 'Rock The Treatment',
+          item_category: ITEM_CATEGORY,
+          price: UNIT_PRICE,
+          quantity: quantity,
+          currency: CURRENCY
+        }]
+      }
+    }, detail || {}));
+  }
+  trackEcommerce('view_item', 1);
 
   var mainImg = document.getElementById('mainImg');
   var mainAvif = document.getElementById('mainSrcAvif');
@@ -580,7 +610,7 @@ ${stickyHtml}
   });
 
   var cartBtns = Array.prototype.slice.call(document.querySelectorAll('.js-cart-btn'));
-  cartBtns.forEach(function(b){ b.addEventListener('click', function(){ track(b.getAttribute('data-track') || 'add_to_cart', {quantity: 1, value: UNIT_PRICE}); }); });
+  cartBtns.forEach(function(b){ b.addEventListener('click', function(){ trackEcommerce('add_to_cart', 1, {cta_location: b.getAttribute('data-cta-location') || 'inline'}); }); });
   document.querySelectorAll('[data-track]:not(.js-cart-btn)').forEach(function(el){ el.addEventListener('click', function(){ track(el.getAttribute('data-track'), {href: el.href}); }); });
 
   var sticky = document.getElementById('stickyBar');

@@ -167,7 +167,7 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
         <span class="price">$169.99</span>
       </div>
       <div class="buy-row" id="buyRow">
-        <a class="atc js-cart-btn" href="https://www.rockthetreatment.com/cart/?add-to-cart=248&quantity=1" data-track="add_to_cart">Add to Cart · $169.99</a>
+        <a class="atc js-cart-btn" href="https://www.rockthetreatment.com/cart/?add-to-cart=248&quantity=1" data-cta-location="inline">Add to Cart · $169.99</a>
       </div>
       <div class="buy-note"><span>🔒 Secure checkout</span><span class="r">Free gift note at checkout</span></div>
       <div class="stats">
@@ -320,7 +320,7 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
   <aside class="sticky" id="stickyBar" aria-label="Purchase" aria-hidden="true">
     <div class="row">
       <div class="meta"><div class="t">Large Women's Chemo Care Package</div><div class="p">$169.99</div></div>
-      <a class="atc js-cart-btn" href="https://www.rockthetreatment.com/cart/?add-to-cart=248&quantity=1" data-track="add_to_cart_sticky">Add to Cart</a>
+      <a class="atc js-cart-btn" href="https://www.rockthetreatment.com/cart/?add-to-cart=248&quantity=1" data-cta-location="sticky">Add to Cart</a>
     </div>
   </aside>
 </div>
@@ -332,11 +332,41 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
   var PRODUCT_NAME = "Large Women's Chemo Care Package";
   var UNIT_PRICE = 169.99;
   var GALLERY = [{"a":"/assets/uploads/2018/04/Women-Large-Chemo-Basket-Main.avif","w":"/assets/uploads/2018/04/Women-Large-Chemo-Basket-Main.webp","f":"/assets/uploads/2018/04/Women-Large-Chemo-Basket-Main.jpg"},{"a":"","w":"/assets/uploads/2018/04/Womens-Chemo-Large-Animation-Opt.webp","f":"/assets/uploads/2018/04/Womens-Chemo-Large-Animation-Opt-still.jpg"},{"a":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_dry-mouth.avif","w":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_dry-mouth.webp","f":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_dry-mouth.jpg"},{"a":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_nausea.avif","w":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_nausea.webp","f":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_nausea.jpg"},{"a":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_engaging-mind.avif","w":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_engaging-mind.webp","f":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_engaging-mind.jpg"}];
+  var CURRENCY = 'USD';
+  var ITEM_CATEGORY = "Chemo Care Packages";
   window.dataLayer = window.dataLayer || [];
+
+  // Custom (non-ecommerce) events — flat parameters.
   function track(eventName, detail){
     window.dataLayer.push(Object.assign({event:eventName, product_id:PRODUCT_ID, product_name:PRODUCT_NAME}, detail || {}));
   }
-  track('view_item', {value: UNIT_PRICE});
+
+  // GA4 ecommerce events. The items array is what populates GA4's ecommerce
+  // reports (item revenue, cart-to-view rate); value on its own leaves them
+  // empty. Pushing ecommerce:null first clears the previous ecommerce object
+  // so its fields cannot bleed into the next event.
+  function trackEcommerce(eventName, quantity, detail){
+    window.dataLayer.push({ecommerce: null});
+    window.dataLayer.push(Object.assign({
+      event: eventName,
+      product_id: PRODUCT_ID,
+      product_name: PRODUCT_NAME,
+      ecommerce: {
+        currency: CURRENCY,
+        value: Math.round(UNIT_PRICE * quantity * 100) / 100,
+        items: [{
+          item_id: String(PRODUCT_ID),
+          item_name: PRODUCT_NAME,
+          item_brand: 'Rock The Treatment',
+          item_category: ITEM_CATEGORY,
+          price: UNIT_PRICE,
+          quantity: quantity,
+          currency: CURRENCY
+        }]
+      }
+    }, detail || {}));
+  }
+  trackEcommerce('view_item', 1);
 
   var mainImg = document.getElementById('mainImg');
   var mainAvif = document.getElementById('mainSrcAvif');
@@ -367,7 +397,7 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
   });
 
   var cartBtns = Array.prototype.slice.call(document.querySelectorAll('.js-cart-btn'));
-  cartBtns.forEach(function(b){ b.addEventListener('click', function(){ track(b.getAttribute('data-track') || 'add_to_cart', {quantity: 1, value: UNIT_PRICE}); }); });
+  cartBtns.forEach(function(b){ b.addEventListener('click', function(){ trackEcommerce('add_to_cart', 1, {cta_location: b.getAttribute('data-cta-location') || 'inline'}); }); });
   document.querySelectorAll('[data-track]:not(.js-cart-btn)').forEach(function(el){ el.addEventListener('click', function(){ track(el.getAttribute('data-track'), {href: el.href}); }); });
 
   var sticky = document.getElementById('stickyBar');
