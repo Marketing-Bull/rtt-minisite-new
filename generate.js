@@ -66,7 +66,7 @@ function img(relPath) {
 }
 
 function itemImg(name) {
-  if (itemImages[name]) return img(itemImages[name]);
+  if (itemImages[name] && assetExists(img(itemImages[name]))) return img(itemImages[name]);
   const svg = `<svg width="70" height="70" xmlns="http://www.w3.org/2000/svg"><rect width="70" height="70" fill="#f0ece8"/><text x="35" y="42" text-anchor="middle" font-size="12" fill="#999" font-family="sans-serif">${escHtml(name.substring(0, 10))}</text></svg>`;
   return 'data:image/svg+xml;base64,' + Buffer.from(svg).toString('base64');
 }
@@ -170,140 +170,139 @@ const SHIPPING_FAQS = [
 // Rock, Nausea Wrist Band, Tote, RTT Wristband, Hat, Warmies). These replace
 // the mockup's "other size" suggestions. Override per product via mobileUi.addOns.
 const DEFAULT_ADD_ONS = [
+  'Cozy Companion™ Blanket',
   'YOU ROCK! Worry Stone',
   'Anti-Nausea Wristband',
   'Reusable Folding Tote',
   '#ROCKtheTREATMENT Wristband',
   'Knit Beanie',
   'Warmies® Plush Animal',
+  'Warmies® + YOU ROCK! Stone',
 ];
 
 const gtmHead = GTM_ID ? `<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');</script>\n` : '';
 const gtmBody = GTM_ID ? `<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${GTM_ID}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>\n` : '';
 
-const FONTS = 'https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&display=swap';
+const FONTS = 'https://fonts.googleapis.com/css2?family=Catamaran:wght@400;500;600;700;800&display=swap';
 const FAVICON = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%20100%27%3E%3Crect%20width=%27100%27%20height=%27100%27%20rx=%2720%27%20fill=%27%235ba346%27/%3E%3Ctext%20x=%2750%27%20y=%2764%27%20font-family=%27Georgia,serif%27%20font-size=%2734%27%20font-weight=%27700%27%20text-anchor=%27middle%27%20fill=%27%23fff%27%3ERTT%3C/text%3E%3C/svg%3E";
 
 // ---- Shared CSS (the 1b look, lifted out of inline styles) -----------------
 const SHARED_CSS = `
-:root{--green:#5ba346;--green-dark:#3f7a2c;--orange:#ff6319;--orange-dark:#e55a15;--star:#ffb300;--text:#1a1a1a;--muted:#666;--soft:#888;--faint:#999;--border:#eee;--sans:'Inter',system-ui,-apple-system,sans-serif;--serif:'DM Serif Display',Georgia,serif}
+:root{--green:#5ba346;--green-dark:#3f7a2c;--brand-green:#81d742;--grad-a:#65993a;--grad-b:#96f24c;--orange:#ff6319;--orange-dark:#fb4f14;--purple:#701f8e;--header:#606060;--star:#ffb300;--text:#1a1a1a;--muted:#666;--soft:#888;--faint:#999;--border:#eee;--sans:'Catamaran',system-ui,-apple-system,sans-serif}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-body{font-family:var(--sans);background:#f4f4f4;color:var(--text);scrollbar-width:none}
+body{font-family:var(--sans);background:#f4f4f4;color:var(--text);scrollbar-width:none;line-height:1.35}
 body::-webkit-scrollbar{width:0;height:0}
 a{color:var(--green);text-decoration:none}
 img{max-width:100%}
 picture{display:contents}
 button{font-family:inherit}
 .wrap{position:relative;max-width:480px;margin:0 auto;background:#fff;min-height:100vh}
-.topbar{position:sticky;top:0;z-index:6;background:var(--green-dark);color:#fff;text-align:center;font-size:12.5px;font-weight:600;padding:8px 16px}
+.topbar{position:sticky;top:0;z-index:6;background:linear-gradient(90deg,var(--grad-a),var(--grad-b));color:#fff;text-align:center;font-size:12.5px;font-weight:700;letter-spacing:.02em;padding:7px 16px;text-shadow:0 1px 1px rgba(0,0,0,.15)}
 .topbar strong{font-variant-numeric:tabular-nums}
-.header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:6px 12px;font-size:13px;font-weight:600}
-.header .logo img{height:26px;width:auto;display:block}
-.header .hlink{display:inline-flex;align-items:center;min-height:44px;min-width:44px;color:var(--text)}
+.header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:8px 14px;background:var(--header);color:#fff;font-size:14px;font-weight:700}
+.header .logo img{height:40px;width:auto;display:block}
+.header .hlink{display:inline-flex;align-items:center;min-height:44px;min-width:44px;color:#fff}
 .header .hlink.right{justify-self:end}
-.header .hlink svg{width:22px;height:22px}
+.header .hlink svg{width:24px;height:24px}
 `;
 
 const PRODUCT_CSS = `
-.gallery-main{width:100%;display:block;aspect-ratio:1/1;max-height:44vh;object-fit:cover;background:#f4f4f4}
-@media(max-height:700px){.gallery-main{max-height:34vh}.thumb{width:44px;height:44px}.buy{padding-top:6px}}
+.gallery-main{width:100%;display:block;aspect-ratio:1/1;max-height:42vh;object-fit:cover;background:#f4f4f4}
+@media(max-height:700px){.gallery-main{max-height:34vh}.thumb{width:44px;height:44px}.buy{padding-top:4px}}
+.rating-row{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#333;padding:8px 20px 0}
+.rating-row a{color:inherit;display:inline-flex;align-items:center;gap:8px}
+.stars{color:var(--star)}
+.rating-row .count{color:var(--faint);font-weight:500}
 .thumbs{display:flex;gap:8px;padding:8px 16px 0;overflow-x:auto;scrollbar-width:none}
 .thumbs::-webkit-scrollbar{display:none}
 .thumb{flex:0 0 auto;width:50px;height:50px;padding:0;border:2px solid #e6e6e6;border-radius:9px;overflow:hidden;background:#fff;cursor:pointer}
 .thumb[aria-current="true"]{border-color:var(--green)}
 .thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.buy{padding:8px 20px 4px}
-.rating-row{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#333}
-.rating-row a{color:inherit;display:inline-flex;align-items:center;gap:8px}
-.stars{color:var(--star)}
-.rating-row .count{color:var(--faint);font-weight:500}
-h1{font-weight:700;font-size:20px;line-height:1.25;color:var(--text);margin:6px 0 0}
-.banner .overview{font-size:12.5px;line-height:1.5;color:#8a8a8a;margin:8px auto 0;max-width:34em}
+.buy{padding:6px 20px 4px}
+h1{font-weight:800;font-size:21px;line-height:1.2;color:var(--text);margin:4px 0 0}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.chips span{font-size:11px;font-weight:600;color:#3f7a2c;background:#eef6ea;border-radius:999px;padding:4px 9px;line-height:1.2}
-.price-row{display:flex;align-items:baseline;gap:10px;margin-top:10px;flex-wrap:wrap}
+.chips span{font-size:11.5px;font-weight:700;color:#3f7a2c;background:#eef6ea;border-radius:999px;padding:4px 9px;line-height:1.2}
+.price-row{display:flex;align-items:baseline;gap:10px;margin-top:8px;flex-wrap:wrap}
 .price{font-weight:800;font-size:30px;font-variant-numeric:tabular-nums;line-height:1}
 .compare{font-size:16px;color:var(--faint);text-decoration:line-through}
 .save{font-size:12px;font-weight:700;color:#fff;background:var(--orange);padding:3px 8px;border-radius:6px}
-.buy-row{display:flex;align-items:center;gap:10px;margin-top:12px}
-.buy-note{display:flex;justify-content:space-between;font-size:11.5px;color:var(--green);font-weight:600;margin-top:8px}
-.buy-note .r{color:var(--muted)}
+.buy-row{display:flex;align-items:center;gap:10px;margin-top:10px}
+.buy-note{display:flex;justify-content:space-between;font-size:11.5px;color:var(--green);font-weight:700;margin-top:8px}
+.buy-note .r{color:var(--muted);font-weight:600}
 .qty{display:flex;align-items:center;border:1px solid #ddd;border-radius:12px;overflow:hidden;flex:0 0 auto}
 .qty button{width:38px;height:54px;border:none;background:#fff;font-size:20px;color:#333;cursor:pointer}
-.qty output{width:28px;text-align:center;font-weight:700;font-size:15px}
+.qty output{width:28px;text-align:center;font-weight:800;font-size:15px}
 .atc{flex:1;display:flex;align-items:center;justify-content:center;height:54px;background:var(--orange);color:#fff;border-radius:12px;font-weight:800;font-size:16px;letter-spacing:.02em;text-transform:uppercase;box-shadow:0 8px 20px -6px rgba(255,99,25,.7);white-space:nowrap}
 .atc:hover{color:#fff;background:var(--orange-dark)}
-.checklist{border:1px solid var(--border);border-radius:14px;padding:12px 16px;margin-top:14px;display:flex;flex-direction:column;gap:8px}
-.checklist div{display:flex;align-items:center;gap:10px;font-size:13px;color:#333}
-.checklist .tick{color:var(--green);font-weight:800}
-.checklist .dim{color:var(--faint)}
-.stats{display:flex;gap:8px;margin-top:12px}
+.stats{display:flex;gap:8px;margin-top:14px}
 .stat{flex:1;text-align:center;border:1px solid var(--border);border-radius:12px;padding:10px 6px}
 .stat b{display:block;font-weight:800;font-size:15px}
 .stat span{display:block;font-size:10.5px;color:var(--soft);margin-top:2px}
-h2{font-weight:700;font-size:15px;color:var(--text);margin:22px 0 10px}
-.sec{padding:0 20px}
-.rail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 20px 6px;margin:0 -20px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.stat svg{width:22px;height:22px;display:block;margin:0 auto 2px;stroke:#333;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
+.bell{display:flex;align-items:center;gap:12px;margin-top:14px;padding:10px 12px;border-radius:14px;background:rgba(129,215,66,.13);border:1px solid rgba(129,215,66,.35)}
+.bell img{width:56px;height:56px;object-fit:cover;border-radius:10px;flex:0 0 auto;background:#fff}
+.bell .t{font-size:13.5px;font-weight:800;color:#2f5f21;line-height:1.25}
+.bell .s{font-size:12px;color:#4a6b3f;margin-top:2px;line-height:1.35}
+.bell a{display:inline-block;margin-top:4px;font-size:12.5px;font-weight:800;color:var(--green-dark);text-decoration:underline;text-underline-offset:2px}
+.rail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 20px 8px;margin:0 -20px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .rail::-webkit-scrollbar{display:none}
-.rail .quote{flex:0 0 82%;scroll-snap-align:start;margin-top:0}
-.bars{margin-top:10px}
-.bar{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--soft);margin-bottom:5px}
-.bar .lbl{width:26px}
-.bar .track{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
-.bar .fill{height:100%;background:var(--star)}
-.quote{background:#fafafa;border-radius:12px;padding:12px 14px;margin-top:12px}
+.feat{flex:0 0 150px;scroll-snap-align:start;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff}
+.feat img{width:100%;height:110px;object-fit:cover;display:block;background:#fafafa}
+.feat .name{font-size:12.5px;font-weight:800;line-height:1.2;padding:8px 9px 0}
+.feat .desc{font-size:11.5px;color:var(--muted);line-height:1.35;padding:3px 9px 10px}
+.fan{margin:22px -20px 0;padding:18px 20px 20px;background:linear-gradient(135deg,rgba(255,105,0,.10),rgba(129,215,66,.12) 50%,rgba(6,147,227,.10));border-top:1px solid rgba(0,0,0,.05);border-bottom:1px solid rgba(0,0,0,.05)}
+.fan h2{margin:0 0 4px;text-transform:uppercase;letter-spacing:.04em;color:var(--orange-dark)}
+.fan .sum{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#333;margin-bottom:10px}
+.fan .sum .stars{font-size:14px}
+.fan .sum .pct{color:var(--muted);font-weight:600}
+.fan .rail{padding-bottom:4px}
+.quote{flex:0 0 82%;scroll-snap-align:start;background:rgba(255,255,255,.85);border-radius:12px;padding:12px 14px}
 .quote .stars{font-size:12px}
-.quote p{font-size:13px;line-height:1.5;color:#333;margin:5px 0 0}
-.quote .who{font-size:11.5px;color:var(--faint);margin-top:7px;font-weight:600}
-.rail .quote p{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.addon{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden;text-align:center;display:block;color:#333}
+.quote p{font-size:13px;line-height:1.45;color:#333;margin:5px 0 0;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.quote .who{font-size:11.5px;color:var(--faint);margin-top:7px;font-weight:700}
+.fan .more{display:inline-flex;align-items:center;justify-content:center;margin-top:12px;height:38px;padding:0 16px;border-radius:8px;background:var(--orange);color:#fff;font-size:13px;font-weight:800}
+.encore h2{margin-bottom:2px}
+.encore .sub{font-size:12.5px;color:var(--muted);margin:0 0 10px}
+.addon{flex:0 0 118px;scroll-snap-align:start;background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden;text-align:center;display:block;color:#333}
 .addon img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
-.addon span{display:block;font-size:10.5px;font-weight:500;padding:6px 5px 9px;line-height:1.3}
-.banner{background:#fff8f0;text-align:center;padding:22px 20px;margin-top:22px;border-top:1px solid #ffe0b2;border-bottom:1px solid #ffe0b2}
-.banner h2{font-weight:800;font-size:19px;line-height:1.25;margin:0}
-.banner p{font-size:13px;color:#6b6b6b;margin:8px 0 0}
-.inside{padding:18px 20px 6px}
-.cat-h{display:flex;align-items:center;gap:8px;margin:0 0 6px}
-.items + .cat-h{margin-top:16px}
+.addon span{display:block;font-size:11px;font-weight:700;padding:6px 5px 9px;line-height:1.25}
+.banner{background:var(--purple);color:#fff;text-align:center;padding:24px 20px;margin-top:22px}
+.banner h2{font-weight:800;font-size:22px;line-height:1.2;margin:0;color:#fff}
+.banner p{font-size:13px;color:rgba(255,255,255,.85);margin:8px auto 0;max-width:34em;line-height:1.45}
+.inside{padding:18px 20px 8px;background-color:#fff;background-image:radial-gradient(rgba(255,99,25,.10) 2px,transparent 2.5px),radial-gradient(rgba(129,215,66,.12) 2px,transparent 2.5px),radial-gradient(rgba(6,147,227,.08) 2px,transparent 2.5px);background-size:34px 34px,34px 34px,34px 34px;background-position:0 0,17px 17px,8px 25px}
+.cat-h{display:flex;align-items:center;gap:8px;margin:0 0 4px}
+.items + .cat-h{margin-top:14px}
 .cat-h i{width:4px;height:18px;background:var(--orange);border-radius:2px;flex:0 0 auto}
 .cat-h h2{margin:0}
 .items{list-style:none;margin:0;padding:0}
-.items li{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #f1f1f1}
+.items li{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.06)}
 .items li:last-child{border-bottom:0}
-.items img{width:44px;height:44px;object-fit:cover;border-radius:8px;flex:0 0 auto;background:#f4f4f4}
-.items .name{font-size:12.5px;font-weight:600;line-height:1.25}
+.items img{width:46px;height:46px;object-fit:cover;border-radius:8px;flex:0 0 auto;background:#f3f3f3;border:1px solid #e3e3e3}
+.items .name{font-size:13px;font-weight:800;line-height:1.2}
 .items .desc{font-size:11.5px;color:var(--muted);line-height:1.35;margin-top:2px}
-.inside .bell{display:block;margin-top:14px;border:1px dashed #ddd;border-radius:12px;text-align:center;color:var(--orange);font-size:12px;font-weight:700;background:#fff8f4;padding:12px}
-.faqs{padding:20px 20px 6px;border-top:8px solid #f5f5f5;margin-top:18px}
+.faqs{padding:20px 20px 6px;border-top:8px solid #f5f5f5}
 .faqs h2{font-size:16px;margin:0 0 4px}
 .faq{border-bottom:1px solid var(--border)}
-.faq button{display:flex;width:100%;justify-content:space-between;align-items:flex-start;gap:12px;background:none;border:0;padding:14px 0;text-align:left;font-size:13.5px;font-weight:600;color:var(--text);cursor:pointer}
+.faq button{display:flex;width:100%;justify-content:space-between;align-items:flex-start;gap:12px;background:none;border:0;padding:14px 0;text-align:left;font-size:13.5px;font-weight:700;color:var(--text);cursor:pointer}
 .faq .chev{display:inline-block;transition:transform .3s ease;color:#bbb;flex:0 0 auto}
 .faq[data-open="true"] .chev{transform:rotate(180deg)}
 .faq .panel{overflow:hidden;max-height:0;transition:max-height .3s ease}
-.faq .panel p{font-size:12.5px;line-height:1.55;color:var(--muted);margin:0 0 14px}
-.faqs .more{text-align:center;margin:12px 0 8px;font-size:13px;font-weight:600}
-.reviews{padding:20px 20px 8px;border-top:8px solid #f5f5f5}
-.rev-head{display:flex;align-items:center;gap:14px}
-.rev-head .big{font-size:40px;font-weight:800;line-height:1}
-.rev-head .stars{font-size:15px}
-.rev-head .of{font-size:12px;color:var(--soft);line-height:1.4}
-.rev-head .of strong{color:var(--text)}
-.reviews .all{display:block;text-align:center;margin:14px 0 4px;font-size:13px;font-weight:600}
+.faq .panel p{font-size:12.5px;line-height:1.5;color:var(--muted);margin:0 0 14px}
+.faqs .more{text-align:center;margin:12px 0 8px;font-size:13px;font-weight:700}
 .footer{background:#f4f4f2;color:#666;padding:26px 20px;margin-top:18px;border-top:1px solid #e2e2e2}
-.footer .brand{font-family:var(--serif);font-size:18px;color:#4a8a38}
+.footer .brand{font-size:18px;font-weight:800;color:#4a8a38}
 .footer div{font-size:12px;margin-top:6px}
 .footer .addr{font-size:11px;margin-top:3px;color:#6b6b6b}
 .footer nav{display:flex;flex-wrap:wrap;gap:2px 16px;margin-top:10px}
-.footer nav a{display:inline-flex;align-items:center;min-height:36px;font-size:12px;font-weight:600}
+.footer nav a{display:inline-flex;align-items:center;min-height:36px;font-size:12px;font-weight:700}
 .footer .legal{font-size:11px;margin-top:12px;padding-top:14px;border-top:1px solid #e0e0e0;color:#6b6b6b}
 .sticky{position:fixed;left:0;right:0;bottom:0;z-index:7;max-width:480px;margin:0 auto;background:#fff;border-top:1px solid var(--border);padding:10px 16px calc(12px + env(safe-area-inset-bottom));box-shadow:0 -8px 24px -12px rgba(0,0,0,.25);transform:translateY(110%);transition:transform .25s ease}
 .sticky.is-visible{transform:none}
 .sticky .row{display:flex;align-items:center;gap:10px}
 .sticky .meta{flex:1;min-width:0}
-.sticky .meta .t{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sticky .meta .t{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sticky .meta .p{font-size:15px;font-weight:800}
 .sticky .atc{flex:0 0 auto;padding:0 18px;height:48px;font-size:14px}
 .sticky-pad{height:0;transition:height .25s ease}
@@ -337,20 +336,20 @@ function footerHtml() {
 function reviewCard(r) {
   if (!r) return '';
   const author = r.author || 'Verified Buyer';
+  const who = /verified buyer/i.test(author) ? author : `${author} · Verified Buyer`;
   return `    <div class="quote">
       <div class="stars" aria-label="${r.stars} out of 5 stars">${'★'.repeat(r.stars)}${'☆'.repeat(5 - r.stars)}</div>
       <p>${r.title ? `<strong>${escHtml(r.title)}</strong> ` : ''}${escHtml(r.text)}</p>
-      <div class="who">— ${escHtml(author)} · Verified Buyer${r.date ? ` · ${escHtml(r.date)}` : ''}</div>
+      <div class="who">— ${escHtml(who)}${r.date ? ` · ${escHtml(r.date)}` : ''}</div>
     </div>`;
 }
 
 // ---- Product page ----------------------------------------------------------
-// Layout follows the 1b mockup, adjusted for Stacy's whiteboard feedback:
-// buy button above the fold, package-tile thumbnails (plus the box-opening
-// animation where one exists), a brief overview under the title, side-swipe
-// reviews, popular add-ons instead of other sizes, and a compact item list
-// lower on the page. The sticky bar only appears once the inline buy button
-// has scrolled away, and can be turned off with mobileUi.stickyCart = false.
+// Layout follows the 1b mockup with the annotated feedback applied: dark gray
+// header with a bigger logo, rating under the hero, buy button above the fold,
+// stat tiles, a Celebration Bell note, "Packed with Purpose" rail, "Our Fan
+// Club" reviews, "Encore" add-on rail, purple brand banner, and a compact item
+// list on a polka-dot background. Colors come from rockthetreatment.com/shop.
 function generatePage(product) {
   const ui = product.mobileUi || {};
   const pr = pronounsFor(product);
@@ -358,8 +357,6 @@ function generatePage(product) {
   const heroUrl = img(product.heroImage);
   const heroV = variants(heroUrl);
 
-  // Gallery: hero, the box-opening animation (if the product has one), then
-  // the package tiles that show every item on a colored background.
   const tiles = (product.galleryImages || []).filter(g => g !== product.heroImage);
   const animation = ui.animationImage && assetExists(img(ui.animationImage)) ? [ui.animationImage] : [];
   const galleryImages = [product.heroImage].concat(animation, tiles).map(img);
@@ -374,7 +371,6 @@ function generatePage(product) {
   const freeShipping = priceNum >= 200;
   const cartUrl = cartUrlFor(product.id, 1);
   const totalItems = product.categories.reduce((n, c) => n + c.items.length, 0);
-  const itemCount = product.itemCount || String(totalItems);
   const stickyCart = ui.stickyCart !== false;
 
   // Opt-in promo elements (see README). All default to off.
@@ -386,19 +382,23 @@ function generatePage(product) {
   const featuredIdx = ui.featuredReviewIndex || 0;
   const reviews = product.reviews.slice();
   if (reviews[featuredIdx]) reviews.unshift(reviews.splice(featuredIdx, 1)[0]);
-  const breakdown = product.ratingBreakdown; // {5: n, 4: n, ...} — optional, needs evidence
-  const maxBar = breakdown ? Math.max(...Object.values(breakdown), 1) : 0;
+  const breakdown = product.ratingBreakdown; // {5: n, 4: n, ...} from the live review widget
+  const fiveStarPct = breakdown && product.reviewCount ? Math.round((breakdown[5] || 0) / product.reviewCount * 100) : null;
 
+  const allItems = product.categories.reduce((a, c) => a.concat(c.items), []);
+  const featured = ((ui.featuredItems && ui.featuredItems.length) ? ui.featuredItems : allItems.slice(0, 6)).filter(f => f && f.name);
   const addOnNames = ui.addOns || DEFAULT_ADD_ONS;
   const addOns = addOnNames.map(n => upsellProducts.find(u => u.name === n)).filter(u => u && assetExists(img(u.image)));
-  const celebrationUrl = ui.celebrationUrl || `${wwwBase}/bell/`;
+  const bell = upsellProducts.find(u => u.name === 'Celebration Gift (Free)');
+  const bellUrl = ui.celebrationUrl || `${wwwBase}/bell/`;
+  const bellImg = bell && assetExists(img(bell.image)) ? img(bell.image) : '';
   const faqList = (isRadiation ? radiationFaqs : faqs).map(q => ({ q, a: FAQ_ANSWERS[q] || "Contact us for more details — we're happy to help with any questions about our care packages." }));
   const allFaqs = SHIPPING_FAQS.slice(0, 3).concat(faqList, SHIPPING_FAQS.slice(3));
   const chips = product.categories.map(c => c.name.replace(/^For /, ''));
 
   const topbar = cutoffHour != null
     ? `  <div class="topbar" data-countdown data-cutoff-hour="${cutoffHour}">🚚 Order within <strong data-countdown-value>…</strong> to ship <strong>today</strong></div>`
-    : `  <div class="topbar">🚚 Ships in 1–2 business days from New York${freeShipping ? ' · Free shipping' : ' · Free shipping over $200'}</div>`;
+    : `  <div class="topbar">${freeShipping ? 'Free shipping on this package' : 'Free shipping over $200 · Flat rate shipping from $4.99'}</div>`;
 
   const priceRow = `      <div class="price-row">
         <span class="price">${escHtml(price)}</span>${showCompare ? `
@@ -418,37 +418,44 @@ ${qtyHtml}
       </div>
       <div class="buy-note"><span>🔒 Secure checkout</span><span class="r">${stockNote ? escHtml(stockNote) : 'Free gift note at checkout'}</span></div>`;
 
-  const checklist = `      <div class="checklist">
-        <div><span class="tick">✓</span><strong>${escHtml(itemCount)} comforting items</strong>, hand-packed in New York</div>
-        <div><span class="tick">✓</span>${freeShipping ? 'Free shipping' : 'Free shipping on orders over $200'} <span class="dim">· ships in 1–2 business days</span></div>
-        <div><span class="tick">✓</span>Add a free gift note at checkout</div>
-        <div><span class="tick">✓</span>180-day returns on unopened packages</div>
-      </div>`;
-
+  const truck = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7.5h10v9H3z"/><path d="M13 10.5h4l4 3.5v2.5h-8z"/><circle cx="7" cy="18.5" r="1.6"/><circle cx="17" cy="18.5" r="1.6"/></svg>';
   const stats = `      <div class="stats">
-        <div class="stat"><b>${fmtInt(product.totalSales)}</b><span>packages sent</span></div>
+        <div class="stat"><b>${totalItems}</b><span>curated items</span></div>
         <div class="stat"><b>${fmtRating(rating)}★</b><span>avg rating</span></div>
-        <div class="stat"><b>1–2d</b><span>ships fast</span></div>
+        <div class="stat">${truck}<span>ships in 1–2 days</span></div>
       </div>`;
 
-  const bars = breakdown ? `      <div class="bars">
-${[5, 4, 3, 2, 1].filter(s => breakdown[s] != null).map(s => `        <div class="bar"><span class="lbl">${s}★</span><div class="track"><div class="fill" style="width:${Math.round((breakdown[s] / maxBar) * 100)}%"></div></div><span>${fmtInt(breakdown[s])}</span></div>`).join('\n')}
+  // The Celebration Bell is a separate end-of-treatment gift, never included.
+  const bellHtml = `      <div class="bell">${bellImg ? `
+        ${picture(bellImg, { alt: 'Celebration Bell' })}` : ''}
+        <div><div class="t">Supporting Treatment. Celebrating Triumphs.</div><div class="s">When treatment ends, mark the moment with the Celebration Bell, sold separately.</div><a href="${bellUrl}" data-track="celebration_bell">See the Celebration Bell →</a></div>
+      </div>`;
+
+  const packedHtml = featured.length ? `      <h2>Packed with Purpose</h2>
+      <div class="rail" aria-label="A few of the comforts inside, swipe to see more">
+${featured.map(f => `        <div class="feat">${picture(itemImg(f.name), { alt: '' })}<div class="name">${escHtml(f.name)}</div>${f.desc ? `<div class="desc">${escHtml(f.desc)}</div>` : ''}</div>`).join('\n')}
       </div>` : '';
 
-  const reviewRail = reviews.length ? `      <h2>What ${pr.subj === 'they' ? 'families' : pr.subj} rated ${fmtRating(rating)} stars</h2>
-${bars}
-      <div class="rail" aria-label="Customer reviews, swipe to read more">
+  const fanHtml = reviews.length ? `      <section class="fan" id="reviews" aria-labelledby="fan-title">
+        <h2 id="fan-title">Our Fan Club</h2>
+        <div class="sum"><span class="stars" aria-hidden="true">★★★★★</span><span>${fmtRating(rating)}</span><span class="pct">· ${fiveStarPct != null ? `${fiveStarPct}% five-star · ` : ''}${fmtInt(product.reviewCount)} reviews</span></div>
+        <div class="rail" aria-label="Customer reviews, swipe to read more">
 ${reviews.map(reviewCard).join('\n')}
-      </div>` : '';
+        </div>
+        <a class="more" href="${wwwBase}/${product.slug}/#reviews">See more reviews</a>
+      </section>` : '';
 
-  const addOnsHtml = addOns.length ? `      <h2>Popular add-ons for this package</h2>
-      <div class="grid3">
-${addOns.map(u => `        <a class="addon" href="${wwwBase}${u.url}">${picture(img(u.image), { alt: u.name })}<span>${escHtml(u.name)}</span></a>`).join('\n')}
+  const encoreHtml = addOns.length ? `      <div class="encore">
+        <h2>Encore! Include the perfect final note.</h2>
+        <p class="sub">Popular add-ons that pair with this package.</p>
+        <div class="rail" aria-label="Add-on items, swipe to see more">
+${addOns.map(u => `          <a class="addon" href="${wwwBase}${u.url}" data-track="addon_click">${picture(img(u.image), { alt: u.name })}<span>${escHtml(u.name)}</span></a>`).join('\n')}
+        </div>
       </div>` : '';
 
   const categoriesHtml = product.categories.map(cat => `    <div class="cat-h"><i></i><h2>${escHtml(cat.name)}</h2></div>
     <ul class="items">
-${cat.items.map(it => `      <li>${picture(itemImg(it.name), { alt: '', width: 44, height: 44 })}<div><div class="name">${escHtml(it.name)}</div>${it.desc ? `<div class="desc">${escHtml(it.desc)}</div>` : ''}</div></li>`).join('\n')}
+${cat.items.map(it => `      <li>${picture(itemImg(it.name), { alt: '', width: 46, height: 46 })}<div><div class="name">${escHtml(it.name)}</div>${it.desc ? `<div class="desc">${escHtml(it.desc)}</div>` : ''}</div></li>`).join('\n')}
     </ul>`).join('\n');
 
   const faqHtml = allFaqs.map((f, i) => `    <div class="faq" data-faq>
@@ -456,8 +463,8 @@ ${cat.items.map(it => `      <li>${picture(itemImg(it.name), { alt: '', width: 4
       <div class="panel" id="faq-${i}" data-faq-panel><p>${escHtml(f.a)}</p></div>
     </div>`).join('\n');
 
-  const insideTitle = ui.insideTitle || `${itemCount} items. One thoughtful box.`;
-  const insideCopy = ui.supportingHeadline || ui.insideCopy || `Everything ${pr.subj === 'they' ? 'they need' : `${pr.subj} needs`} for body and mind during treatment.`;
+  const bannerTitle = ui.bannerTitle || 'Nurturing Strength. Uplifting Spirits.';
+  const bannerCopy = ui.supportingHeadline || product.shortDesc;
 
   const stickyHtml = stickyCart ? `
   <div class="sticky-pad" id="stickyPad"></div>
@@ -474,7 +481,7 @@ ${qtyHtml}
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#3f7a2c">
+<meta name="theme-color" content="#606060">
 <meta name="robots" content="${ALLOW_INDEXING ? 'index, follow' : 'noindex, follow'}">
 <title>${escHtml(product.metaTitle || product.title)} | Rock The Treatment</title>
 <meta name="description" content="${escHtml(product.shortDesc)}">
@@ -501,40 +508,34 @@ ${headerHtml()}
     <div id="galleryStage" tabindex="0" aria-label="Use left and right arrow keys to browse product images">
       ${picture(heroUrl, { id: 'mainImg', cls: 'gallery-main', alt: product.title, priority: true, lazy: false, avifId: 'mainSrcAvif', webpId: 'mainSrcWebp' })}
     </div>
+    <div class="rating-row"><a href="#reviews"><span class="stars" aria-hidden="true">★★★★★</span><span>${fmtRating(rating)}</span><span class="count">· ${fmtInt(product.reviewCount)} reviews</span></a></div>
     <div class="thumbs" id="galleryThumbs" aria-label="Choose a product image">
 ${galleryImages.map((u, i) => `      <button class="thumb" type="button" data-index="${i}" aria-label="Show image ${i + 1} of ${galleryImages.length}" aria-current="${i === 0 ? 'true' : 'false'}">${picture(u, { alt: '', lazy: false })}</button>`).join('\n')}
     </div>
   </section>
 
   <section class="buy" aria-labelledby="product-title">
-      <div class="rating-row"><a href="#reviews"><span class="stars" aria-hidden="true">★★★★★</span><span>${fmtRating(rating)}</span><span class="count">· ${fmtInt(product.reviewCount)} reviews</span></a></div>
       <h1 id="product-title">${escHtml(product.title)}</h1>
       <div class="chips" aria-label="What this package is for">${chips.map(c => `<span>${escHtml(c)}</span>`).join('')}</div>
 ${priceRow}
 ${buyRow}
-${checklist}
 ${stats}
-${reviewRail}
-${addOnsHtml}
+${bellHtml}
+${packedHtml}
+${fanHtml}
+${encoreHtml}
   </section>
 
-  <div class="banner"><h2>${escHtml(insideTitle)}</h2><p>${escHtml(insideCopy)}</p><p class="overview">${escHtml(product.shortDesc)}</p></div>
+  <div class="banner"><h2>${escHtml(bannerTitle)}</h2><p>${escHtml(bannerCopy)}</p></div>
 
   <section class="inside" aria-label="Everything inside">
 ${categoriesHtml}
-    <a class="bell" href="${celebrationUrl}">Looking for an end-of-treatment gift? Explore the Celebration Bell ↗</a>
   </section>
 
   <section class="faqs" aria-labelledby="faq-title">
     <h2 id="faq-title">FAQs</h2>
 ${faqHtml}
     <div class="more"><a href="${wwwBase}/faqs/">Browse more FAQs →</a></div>
-  </section>
-
-  <section class="reviews" id="reviews" aria-labelledby="reviews-title">
-    <div class="rev-head"><div><div class="big">${fmtRating(rating)}</div><div class="stars" aria-hidden="true">★★★★★</div></div><div class="of">Based on<br><strong>${fmtInt(product.reviewCount)} reviews</strong></div></div>
-    <h2 id="reviews-title" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Customer reviews</h2>
-    <a class="all" href="${wwwBase}/${product.slug}/#reviews">Read all ${fmtInt(product.reviewCount)} reviews →</a>
   </section>
   </main>
 
@@ -555,7 +556,6 @@ ${stickyHtml}
   }
   track('view_item', {price: UNIT_PRICE});
 
-  // Gallery: thumbs swap the <picture> sources and the <img> src.
   var mainImg = document.getElementById('mainImg');
   var mainAvif = document.getElementById('mainSrcAvif');
   var mainWebp = document.getElementById('mainSrcWebp');
@@ -584,7 +584,6 @@ ${stickyHtml}
     if (e.key === 'ArrowRight') { e.preventDefault(); show(current + 1); }
   });
 
-  // One shared quantity drives every stepper, cart link, and price total.
   var qtyOuts = Array.prototype.slice.call(document.querySelectorAll('[data-qty-value]'));
   var cartBtns = Array.prototype.slice.call(document.querySelectorAll('.js-cart-btn'));
   var totals = Array.prototype.slice.call(document.querySelectorAll('[data-total]'));
@@ -597,8 +596,8 @@ ${stickyHtml}
   document.querySelectorAll('[data-qty-dec]').forEach(function(b){ b.addEventListener('click', function(){ qty = Math.max(1, qty - 1); syncCart(); }); });
   document.querySelectorAll('[data-qty-inc]').forEach(function(b){ b.addEventListener('click', function(){ qty = Math.min(20, qty + 1); syncCart(); }); });
   cartBtns.forEach(function(b){ b.addEventListener('click', function(){ track(b.getAttribute('data-track') || 'add_to_cart', {quantity: qty, value: UNIT_PRICE * qty}); }); });
+  document.querySelectorAll('[data-track]:not(.js-cart-btn)').forEach(function(el){ el.addEventListener('click', function(){ track(el.getAttribute('data-track'), {href: el.href}); }); });
 
-  // Sticky bar shows only after the inline buy button scrolls out of view.
   var sticky = document.getElementById('stickyBar');
   var stickyPad = document.getElementById('stickyPad');
   var buyRow = document.getElementById('buyRow');
@@ -612,7 +611,6 @@ ${stickyHtml}
     }, {threshold: 0}).observe(buyRow);
   }
 
-  // FAQ accordion.
   document.querySelectorAll('[data-faq]').forEach(function(row){
     var btn = row.querySelector('button');
     var panel = row.querySelector('[data-faq-panel]');
@@ -625,7 +623,6 @@ ${stickyHtml}
     });
   });
 
-  // Optional same-day-shipping countdown to a daily Eastern-time cutoff.
   var cd = document.querySelector('[data-countdown]');
   if (cd) {
     var cutoffHour = parseInt(cd.getAttribute('data-cutoff-hour'), 10);
@@ -636,7 +633,7 @@ ${stickyHtml}
       var et = new Date(now.toLocaleString('en-US', {timeZone: 'America/New_York'}));
       var secs = (cutoffHour * 3600) - (et.getHours() * 3600 + et.getMinutes() * 60 + et.getSeconds());
       var weekday = et.getDay() >= 1 && et.getDay() <= 5;
-      if (secs <= 0 || !weekday) { cd.innerHTML = '🚚 Ships in 1–2 business days from New York'; return; }
+      if (secs <= 0 || !weekday) { cd.innerHTML = 'Free shipping over $200 · Flat rate shipping from $4.99'; return; }
       out.textContent = Math.floor(secs / 3600) + 'h ' + pad(Math.floor((secs % 3600) / 60)) + 'm ' + pad(secs % 60) + 's';
       setTimeout(tick, 1000);
     }
@@ -659,7 +656,7 @@ function generateIndex() {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#3f7a2c">
+<meta name="theme-color" content="#606060">
 <meta name="robots" content="${ALLOW_INDEXING ? 'index, follow' : 'noindex, follow'}">
 <title>Care Packages | Rock The Treatment</title>
 <meta name="description" content="Thoughtfully curated chemo and radiation care packages — the mobile-friendly Rock The Treatment store.">
@@ -670,7 +667,7 @@ function generateIndex() {
 <link href="${FONTS}" rel="stylesheet">
 <style>${SHARED_CSS}
 .intro{padding:20px 20px 8px;text-align:center}
-.intro h1{font-family:var(--serif);font-size:24px;font-weight:400;margin:0}
+.intro h1{font-size:24px;font-weight:800;margin:0}
 .intro p{font-size:13px;color:var(--muted);margin:6px 0 0}
 .grid{padding:12px 16px 28px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .card{border:1px solid var(--border);border-radius:12px;overflow:hidden;color:inherit;display:block}
@@ -686,7 +683,7 @@ function generateIndex() {
 ${gtmHead}</head>
 <body>
 ${gtmBody}<div class="wrap">
-  <div class="topbar">🚚 Ships in 1–2 business days from New York · Free shipping over $200</div>
+  <div class="topbar">Free shipping over $200 · Flat rate shipping from $4.99</div>
 ${headerHtml()}
   <main>
     <div class="intro">

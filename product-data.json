@@ -115,8 +115,8 @@
       "metaTitle": "Chemo Care Package for Women | Large",
       "price": "$169.99",
       "totalSales": 9178,
-      "reviewCount": 259,
-      "rating": 5,
+      "reviewCount": 260,
+      "rating": 5.0,
       "companyPackagesSent": 45000,
       "heroImage": "/2018/04/Women-Large-Chemo-Basket-Main.jpg",
       "mobileUi": {
@@ -200,101 +200,101 @@
       ],
       "description": "Lovingly packed with personal care, cozy essentials, familiar snacks, and quiet activities chosen to offer everyday comfort. It arrives ready to give, with a free personal gift note available at checkout.",
       "shortDesc": "A thoughtfully packed collection of personal care, cozy essentials, snacks, and quiet activities for someone going through chemotherapy.",
-      "itemCount": "20+",
+      "itemCount": "19",
       "categories": [
         {
-          "name": "Skin, Lips & Sips",
+          "name": "For Dry Mouth, Lips & Skin",
           "items": [
             {
               "name": "Lindi Skin Face Serum",
-              "desc": "Light, non-greasy face serum in a convenient travel size."
+              "desc": "Renew and replenish skin with this light, non-greasy and fast absorbing serum aimed at reducing redness, irritation…"
             },
             {
               "name": "Lindi Skin Body Lotion",
-              "desc": "Light body lotion with Vitamins C and E, chamomile, and cucumber. Travel size."
+              "desc": "Nourish your skin with this light, clean body lotion, containing Vitamins C & E, chamomile and cucumber for maximum…"
             },
             {
               "name": "Dionis Goat Milk Lip Balm",
-              "desc": "Beeswax lip balm with goat milk, shea butter, and coconut oil."
+              "desc": "Repair chapped lips and keep moisture in with paraben free beeswax lip balms infused with goat milk, shea butter and…"
             },
             {
               "name": "Dionis Goat Milk Skin Cream",
-              "desc": "Rich, unscented goat milk skin cream in a 3.3 oz tube."
+              "desc": "Nourish skin and prevent moisture loss with rich, creamy unscented goat milk cream."
             },
             {
               "name": "Dry Mouth Lozenges",
-              "desc": "Sugar-free lozenges. Dairy free, gluten free, nut free, and kosher."
+              "desc": "Relieve dry mouth, a common side effect of chemo, with these delicious all-natural, sugar free lozenges, without the…"
             },
             {
               "name": "Peppermint Drops",
-              "desc": "Individually wrapped mints made with real peppermint oil. Dairy free, gluten free, and kosher."
+              "desc": "Ease nausea, headaches and dry mouth, and counteract a metallic taste - all common side effects of treatment - with…"
             },
             {
               "name": "Herbal Tea",
-              "desc": "A comforting cup of herbal tea for a quiet break."
+              "desc": "Relax with a cup of tea and benefit from its other natural properties."
             }
           ]
         },
         {
-          "name": "Warmth, Snacks & Comfort",
+          "name": "For Nausea, Comfort & Energy",
           "items": [
             {
               "name": "Hot & Cold Eye Pillow",
-              "desc": "Silky, peppermint-and-eucalyptus-scented eye pillow that can be warmed or chilled."
+              "desc": "Relieve a wide variety of discomforts with this silky aromatherapy pillow."
             },
             {
               "name": "Soft & Cozy Socks",
-              "desc": "Soft socks for an extra layer of warmth. Styles vary."
+              "desc": "Warm up the little piggies during chemotherapy since centers that administer treatment are often chilly."
             },
             {
               "name": "RTT Chemo Beanie",
-              "desc": "Soft cotton-blend knit beanie embroidered with #RockTheTreatment. Colors vary."
+              "desc": "Protect the delicate scalp and keep warm with this soft knit beanie, embroidered with our empowering message…"
             },
             {
               "name": "Queasy Pops",
-              "desc": "Individually wrapped flavored drops made with herbs and essential oils."
+              "desc": "Alleviate both nausea and dry mouth that often accompany chemotherapy with these tasty, drug free drops/pops made…"
             },
             {
               "name": "Nut & Dried Fruit Mix",
-              "desc": "A convenient mix of nuts and dried fruit. Dairy free, gluten free, and kosher."
+              "desc": "Boost energy and improve the immune system with this heart healthy, nutritious snack."
             },
             {
               "name": "Dark Chocolate Covered Berries",
-              "desc": "Two snack packs of chocolate-covered pomegranate, blueberries, and acai. Gluten free and kosher."
+              "desc": "Boost the immune system with some healthy dark chocolate covered sweetness."
             },
             {
               "name": "Peanut Butter Sandwich Crackers",
-              "desc": "A familiar peanut-butter cracker snack. Kosher."
+              "desc": "Alleviate the challenge of taking medicine on an empty stomach when you’re on-the-go, or simply wanting something…"
             }
           ]
         },
         {
-          "name": "Quiet Activities & Organization",
+          "name": "For Engaging the Mind",
           "items": [
             {
               "name": "Adult Coloring Book Set",
-              "desc": "A screen-free activity with colored pencils and a sharpener."
+              "desc": "Calm your brain and help your body relax by coloring these beautifully illustrated designs."
             },
             {
               "name": "Puzzles & Brain Teasers",
-              "desc": "A crossword, sudoku, or word-search book with 40–50 puzzles. Types vary."
+              "desc": "Stimulate your brain and redirect your focus with a puzzle book, such as crosswords, sudoku or word search."
             },
             {
               "name": "Custom Designed Note Cards",
-              "desc": "A set of note cards for writing to friends and family."
+              "desc": "Engage your mind while writing notes to loved ones for their gifts and/or support."
             },
             {
               "name": "Cancer Health Organizer",
-              "desc": "Space to record medical history, medicines, appointments, tests, checklists, and reminders."
+              "desc": "Record and track vital health information to ensure nothing important is missed or forgotten."
             }
           ]
         },
         {
-          "name": "Something Cheerful",
+          "name": "Just For Fun",
           "items": [
             {
               "name": "Jelly Belly Cocktails",
-              "desc": "Piña Colada, Strawberry Daiquiri, Cosmo and more — fun without the hangover. Dairy Free, Gluten Free, Kosher."
+              "desc": "Satisfy your craving for a Piña Colada, Strawberry Daiquiri, Pomegranate Cosmo, Peach Bellini, Mojito, or Margarita…"
             }
           ]
         }
@@ -337,7 +337,14 @@
           "author": "Kerry M.",
           "date": "12/11/2025"
         }
-      ]
+      ],
+      "ratingBreakdown": {
+        "5": 254,
+        "4": 3,
+        "3": 1,
+        "2": 1,
+        "1": 1
+      }
     },
     {
       "id": 235,
@@ -347,7 +354,7 @@
       "price": "$129.99",
       "totalSales": 5200,
       "reviewCount": 145,
-      "rating": 4.98,
+      "rating": 5.0,
       "companyPackagesSent": 45000,
       "heroImage": "/2018/04/Women-Medium-Chemo-Basket-Main.jpg",
       "mobileUi": {
@@ -436,85 +443,85 @@
       ],
       "description": "Lovingly packed with personal care, cozy essentials, familiar snacks, and quiet activities chosen to offer everyday comfort. It arrives ready to give, with a free personal gift note available at checkout.",
       "shortDesc": "A thoughtfully packed medium chemo care package with personal care, cozy essentials, familiar snacks, and quiet activities for her.",
-      "itemCount": "15+",
+      "itemCount": "15",
       "categories": [
         {
-          "name": "Skin, Lips & Small Comforts",
+          "name": "For Dry Mouth, Lip & Skin",
           "items": [
             {
               "name": "Lindi Skin Face Serum",
-              "desc": "Light, non-greasy face serum in a convenient travel size."
+              "desc": "Renew and replenish skin with this light, non-greasy and fast absorbing serum aimed at reducing redness, irritation…"
             },
             {
               "name": "Lindi Skin Body Lotion",
-              "desc": "Light body lotion with Vitamins C and E, chamomile, and cucumber. Travel size."
+              "desc": "Nourish your skin with this light, clean body lotion, containing Vitamins C & E, chamomile and cucumber for maximum…"
             },
             {
               "name": "Dionis Goat Milk Lip Balm",
-              "desc": "Beeswax lip balm with goat milk, shea butter, and coconut oil."
+              "desc": "Repair chapped lips and keep moisture in with paraben free beeswax lip balms infused with goat milk, shea butter and…"
             },
             {
               "name": "Dionis Goat Milk Skin Cream",
-              "desc": "Rich, unscented goat milk skin cream in a 3.3 oz tube."
+              "desc": "Nourish skin and prevent moisture loss with rich, creamy unscented goat milk cream."
             },
             {
               "name": "Dry Mouth Lozenges",
-              "desc": "Sugar-free lozenges. Dairy free, gluten free, nut free, and kosher."
+              "desc": "Relieve dry mouth, a common side effect of chemo, with these delicious all-natural, sugar free lozenges, without the…"
             },
             {
               "name": "Peppermint Drops",
-              "desc": "Individually wrapped mints made with real peppermint oil. Dairy free, gluten free, and kosher."
+              "desc": "Ease nausea, headaches and dry mouth, and counteract a metallic taste - all common side effects of treatment - with…"
             }
           ]
         },
         {
-          "name": "Cozy Essentials & Snacks",
+          "name": "For Nausea, Comfort & Energy",
           "items": [
             {
               "name": "Hot & Cold Eye Pillow",
-              "desc": "Silky, peppermint-and-eucalyptus-scented eye pillow that can be warmed or chilled."
+              "desc": "Relieve a wide variety of discomforts with this silky aromatherapy pillow."
             },
             {
               "name": "Soft & Cozy Socks",
-              "desc": "Soft socks for an extra layer of warmth. Styles vary."
+              "desc": "Warm up the little piggies during chemotherapy since centers that administer treatment are often chilly."
             },
             {
               "name": "Queasy Pops",
-              "desc": "Individually wrapped flavored drops made with herbs and essential oils."
+              "desc": "Alleviate both nausea and dry mouth that often accompany chemotherapy with these tasty, drug free drops/pops made…"
             },
             {
               "name": "Nut & Dried Fruit Mix",
-              "desc": "A convenient mix of nuts and dried fruit. Dairy free and gluten free."
+              "desc": "Boost energy and improve the immune system with this heart healthy, nutritious snack."
             },
             {
               "name": "Dark Chocolate Covered Berries",
-              "desc": "Chocolate-covered pomegranate, blueberries, and acai. Gluten free and kosher."
+              "desc": "Boost the immune system with some healthy dark chocolate covered sweetness."
             },
             {
               "name": "Peanut Butter Sandwich Crackers",
-              "desc": "A familiar peanut-butter cracker snack. Kosher."
+              "desc": "Alleviate the challenge of taking medicine on an empty stomach when you’re on-the-go, or simply wanting something…"
             }
           ]
         },
         {
-          "name": "Quiet Activities",
+          "name": "For Engaging the Mind",
           "items": [
             {
               "name": "Puzzle Book",
-              "desc": "A crossword, sudoku, or word-search book with 40–50 puzzles. Types vary."
+              "desc": "Stimulate your brain and redirect your focus with a puzzle book, such as crosswords, sudoku or word search."
             },
             {
               "name": "Brain Teaser Puzzle",
-              "desc": "A compact, self-contained 3D puzzle for quiet, screen-free time."
+              "desc": "Enhance concentration (and hand-eye coordination), with this self-contained 3D fun distraction to keep your mind and…"
             }
           ]
         },
         {
-          "name": "Something Cheerful",
+          "name": "Just For Fun",
           "items": [
             {
               "name": "Jelly Belly Cocktails",
-              "desc": "Piña Colada, Strawberry Daiquiri, Cosmo and more — fun without the hangover. Dairy Free, Gluten Free."
+              "desc": "Satisfy your craving for a Piña Colada, Strawberry Daiquiri, Pomegranate Cosmo, Peach Bellini, Mojito, or Margarita…"
             }
           ]
         }
@@ -576,7 +583,14 @@
           "author": "Laurie C.",
           "date": "03/02/2021"
         }
-      ]
+      ],
+      "ratingBreakdown": {
+        "5": 144,
+        "4": 0,
+        "3": 0,
+        "2": 1,
+        "1": 0
+      }
     },
     {
       "id": 10338,
@@ -585,7 +599,7 @@
       "metaTitle": "Women's Chemo Gift Basket | Small",
       "price": "$74.99",
       "totalSales": 3556,
-      "reviewCount": 142,
+      "reviewCount": 124,
       "heroImage": "/2019/05/Womens-Chemo-Small-Care-Package-Main.jpg",
       "galleryImages": [
         "/2019/05/Womens-Chemo-Small-Care-Package-Main.jpg",
@@ -595,22 +609,30 @@
       ],
       "description": "Packed with <strong>essential products</strong> medical professionals and survivors recommend to ease the effects of cancer treatment. Skin care, nausea relief, energy boosters, and brain-engaging activities.",
       "shortDesc": "This vibrant, uplifting women's chemo gift basket is packed with everything to ease the effects of cancer treatment.",
-      "itemCount": "10+",
+      "itemCount": "12",
       "categories": [
         {
           "name": "For Dry Mouth, Lips & Skin",
           "items": [
             {
+              "name": "Lindi Skin Face Serum",
+              "desc": "Renew and replenish skin with this light, non-greasy and fast absorbing serum aimed at reducing redness, irritation…"
+            },
+            {
+              "name": "Lindi Skin Body Lotion",
+              "desc": "Nourish your skin with this light, clean body lotion, containing Vitamins C & E, chamomile and cucumber for maximum…"
+            },
+            {
               "name": "Dionis Goat Milk Lip Balm",
-              "desc": "Repair chapped lips with paraben free beeswax lip balms infused with goat milk, shea butter and coconut oil."
+              "desc": "Repair chapped lips and keep moisture in with paraben free beeswax lip balms infused with goat milk, shea butter and…"
             },
             {
               "name": "Dry Mouth Lozenges",
-              "desc": "All-natural, sugar free lozenges — #1 Doctor recommended. Dairy free, Gluten free, Kosher."
+              "desc": "Relieve dry mouth, a common side effect of chemo, with these delicious all-natural, sugar free lozenges, without the…"
             },
             {
               "name": "Peppermint Drops",
-              "desc": "Ease nausea, headaches and dry mouth with real peppermint oil mints. Individually wrapped."
+              "desc": "Ease nausea, headaches and dry mouth, and counteract a metallic taste - all common side effects of treatment - with…"
             }
           ]
         },
@@ -618,20 +640,20 @@
           "name": "For Nausea, Comfort & Energy",
           "items": [
             {
-              "name": "Soft & Cozy Socks",
-              "desc": "Warm up during chemotherapy since centers are often chilly. Like a hug for your feet."
-            },
-            {
               "name": "Queasy Pops",
-              "desc": "Drug-free drops from all-natural herbs and essential oils. Doctor recommended."
+              "desc": "Alleviate both nausea and dry mouth that often accompany chemotherapy with these tasty, drug free drops/pops made…"
             },
             {
-              "name": "Nut & Dried Fruit Mix",
-              "desc": "Heart healthy snack. Dairy free, Gluten free, Kosher."
+              "name": "Dark Chocolate Covered Berries",
+              "desc": "Boost the immune system with some healthy dark chocolate covered sweetness."
             },
             {
               "name": "Peanut Butter Sandwich Crackers",
-              "desc": "Protein-filled snack that decreases nausea and increases energy."
+              "desc": "Alleviate the challenge of taking medicine on an empty stomach when you’re on-the-go, or simply wanting something…"
+            },
+            {
+              "name": "Pocket Pack Tissues",
+              "desc": "Be prepared for a variety of situations when you’re on the go."
             }
           ]
         },
@@ -640,7 +662,11 @@
           "items": [
             {
               "name": "Puzzle Book",
-              "desc": "Crosswords, sudoku or word search — 40-50 puzzles. (types vary)"
+              "desc": "Stimulate your brain and redirect your focus with a puzzle book, such as crosswords, sudoku or word search."
+            },
+            {
+              "name": "Brain Teaser Puzzle",
+              "desc": "Enhance concentration (and hand-eye coordination), with this self-contained 3D fun distraction to keep your mind and…"
             }
           ]
         },
@@ -649,7 +675,7 @@
           "items": [
             {
               "name": "Jelly Belly Cocktails",
-              "desc": "Fun mocktail jelly beans — without the hangover. Dairy Free, Gluten Free."
+              "desc": "Satisfy your craving for a Piña Colada, Strawberry Daiquiri, Pomegranate Cosmo, Peach Bellini, Mojito, or Margarita…"
             }
           ]
         }
@@ -690,16 +716,24 @@
           "author": "Verified Buyer",
           "date": "11/2025"
         }
-      ]
+      ],
+      "rating": 5.0,
+      "ratingBreakdown": {
+        "5": 123,
+        "4": 0,
+        "3": 1,
+        "2": 0,
+        "1": 0
+      }
     },
     {
       "id": 250,
       "slug": "radiation-basket",
       "title": "Radiation Care Package",
       "metaTitle": "Radiation Care Package | Cancer Gifts",
-      "price": "$134.99",
+      "price": "$139.99",
       "totalSales": 3339,
-      "reviewCount": 128,
+      "reviewCount": 85,
       "heroImage": "/2018/04/Radiation-Care-Package-Main.jpg",
       "galleryImages": [
         "/2018/04/Radiation-Care-Package-Main.jpg",
@@ -708,76 +742,55 @@
       ],
       "description": "Thoughtfully curated with <strong>premium skin care, comfort items, and healthy snacks</strong> specifically chosen for radiation therapy patients. Soothe irritated skin, boost energy, and keep the mind engaged.",
       "shortDesc": "The Radiation Therapy Gift Basket boasts items that promote comfort and well-being — from energy-boosting snacks to premium skincare that soothes radiation effects.",
-      "itemCount": "15+",
+      "itemCount": "10",
       "categories": [
         {
-          "name": "For Skin Relief & Comfort",
+          "name": "For Mouth, Skin & Relief",
           "items": [
             {
-              "name": "Lindi Skin Face Serum",
-              "desc": "Renew and replenish skin with this light, non-greasy serum aimed at reducing redness, irritation, itching and rash. (travel size)"
+              "name": "Lindi Skin Soothing Balm",
+              "desc": "Protect and hydrate extremely dry skin with this rich, emollient lotion made with shea butter, avocado and olive oils."
             },
             {
-              "name": "Lindi Skin Body Lotion",
-              "desc": "Nourish your skin with Vitamins C & E, chamomile and cucumber for maximum comfort. (travel size)"
+              "name": "Lindi Skin Cooler Roll",
+              "desc": "Relieve discomfort from compromised skin and/or burns caused by radiation with this dermatologist and allergy…"
             },
             {
-              "name": "Dionis Goat Milk Lip Balm",
-              "desc": "Repair chapped lips with goat milk, shea butter and coconut oil."
+              "name": "Dionis Goat Milk Body Lotion Pump",
+              "desc": "Hydrate dry, thirsty skin with this unscented goat milk lotion."
             },
             {
-              "name": "Dionis Goat Milk Skin Cream",
-              "desc": "Rich, creamy unscented goat milk cream — pH similar to human skin. (3.3 oz)"
-            },
-            {
-              "name": "Dry Mouth Lozenges",
-              "desc": "All-natural, sugar free lozenges — #1 Doctor recommended. Dairy free, Gluten free, Kosher."
+              "name": "Aquaphor Healing Ointment",
+              "desc": "Protect and moisturize dry skin with this specially formulated ointment that’s free from fragrances, dyes and…"
             },
             {
               "name": "Peppermint Drops",
-              "desc": "Ease nausea, headaches and dry mouth with real peppermint oil mints."
+              "desc": "Ease nausea, headaches and dry mouth, and counteract a metallic taste - all common side effects of treatment - with…"
             }
           ]
         },
         {
-          "name": "For Comfort & Energy",
+          "name": "For Focus, Fun & Energy",
           "items": [
             {
-              "name": "Hot & Cold Eye Pillow",
-              "desc": "Silky aromatherapy pillow — microwavable or freezable. Eases headaches and aids sleep."
-            },
-            {
-              "name": "Soft & Cozy Socks",
-              "desc": "Soft and cozy socks — like a hug for your feet during treatment."
-            },
-            {
-              "name": "Queasy Pops",
-              "desc": "Drug-free drops from natural herbs and essential oils. Doctor recommended."
-            },
-            {
               "name": "Nut & Dried Fruit Mix",
-              "desc": "Heart healthy snack packed with fiber, antioxidants and proteins."
+              "desc": "Boost energy and improve the immune system with this heart healthy, nutritious snack."
             },
             {
               "name": "Dark Chocolate Covered Berries",
-              "desc": "Pomegranate, blueberries and acai with powerful antioxidants."
+              "desc": "Boost the immune system with some healthy dark chocolate covered sweetness."
             },
             {
-              "name": "Peanut Butter Sandwich Crackers",
-              "desc": "Protein-filled snack for energy."
-            }
-          ]
-        },
-        {
-          "name": "For Focus & Fun",
-          "items": [
-            {
               "name": "Puzzle Book",
-              "desc": "Crosswords, sudoku or word search — 40-50 puzzles. (types vary)"
+              "desc": "Stimulate your brain and redirect your focus with a puzzle book, such as crosswords, sudoku or word search."
+            },
+            {
+              "name": "Jelly Belly Sport Beans",
+              "desc": "Prevent dehydration and boost energy often lost during treatment with delicious fruit flavored jelly beans."
             },
             {
               "name": "Jelly Belly Cocktails",
-              "desc": "Fun mocktail jelly beans — without the hangover. Dairy Free, Gluten Free."
+              "desc": "Satisfy your craving for a Piña Colada, Strawberry Daiquiri, Pomegranate Cosmo, Peach Bellini, Mojito, or Margarita…"
             }
           ]
         }
@@ -818,16 +831,24 @@
           "author": "Verified Buyer",
           "date": "11/2025"
         }
-      ]
+      ],
+      "rating": 5.0,
+      "ratingBreakdown": {
+        "5": 84,
+        "4": 0,
+        "3": 1,
+        "2": 0,
+        "1": 0
+      }
     },
     {
       "id": 232,
       "slug": "mens-medium-chemo-basket",
       "title": "Medium Men's Chemo Care Package",
       "metaTitle": "Men's Chemo Care Package | Medium",
-      "price": "$119.99",
+      "price": "$129.99",
       "totalSales": 3153,
-      "reviewCount": 156,
+      "reviewCount": 78,
       "heroImage": "/2018/04/Medium-Mens-Chemo-Care-Package-Main.jpg",
       "galleryImages": [
         "/2018/04/Medium-Mens-Chemo-Care-Package-Main.jpg",
@@ -837,34 +858,34 @@
       ],
       "description": "Packed with <strong>over 15 high quality products</strong> specifically chosen for men going through chemo. From skin care to comfort items to brain-engaging activities — everything he needs during treatment.",
       "shortDesc": "The medium men's chemo care package includes all essentials that ease the side effects of chemotherapy for him.",
-      "itemCount": "15+",
+      "itemCount": "15",
       "categories": [
         {
-          "name": "For Dry Mouth, Lips & Skin",
+          "name": "For Dry Mouth, Lip & Skin",
           "items": [
             {
               "name": "Lindi Skin Face Serum",
-              "desc": "Renew and replenish skin with this light, non-greasy serum. (travel size)"
+              "desc": "Renew and replenish skin with this light, non-greasy and fast absorbing serum aimed at reducing redness, irritation…"
             },
             {
               "name": "Lindi Skin Body Lotion",
-              "desc": "Nourish skin with Vitamins C & E, chamomile and cucumber. (travel size)"
+              "desc": "Nourish your skin with this light, clean body lotion, containing Vitamins C & E, chamomile and cucumber for maximum…"
             },
             {
               "name": "Dionis Goat Milk Lip Balm",
-              "desc": "Repair chapped lips with goat milk, shea butter and coconut oil."
+              "desc": "Repair chapped lips and keep moisture in with paraben free beeswax lip balms infused with goat milk, shea butter and…"
             },
             {
               "name": "Dionis Goat Milk Skin Cream",
-              "desc": "Rich, creamy unscented goat milk cream. (3.3 oz)"
+              "desc": "Nourish skin and prevent moisture loss with rich, creamy unscented goat milk cream."
             },
             {
               "name": "Dry Mouth Lozenges",
-              "desc": "All-natural, sugar free — #1 Doctor recommended. Dairy free, Gluten free, Kosher."
+              "desc": "Relieve dry mouth, a common side effect of chemo, with these delicious all-natural, sugar free lozenges, without the…"
             },
             {
               "name": "Peppermint Drops",
-              "desc": "Ease nausea, headaches and dry mouth with real peppermint oil mints."
+              "desc": "Ease nausea, headaches and dry mouth, and counteract a metallic taste - all common side effects of treatment - with…"
             }
           ]
         },
@@ -873,27 +894,27 @@
           "items": [
             {
               "name": "Hot & Cold Eye Pillow",
-              "desc": "Aromatherapy pillow — microwavable or freezable. Eases nausea and headaches."
+              "desc": "Relieve a wide variety of discomforts with this silky aromatherapy pillow."
             },
             {
               "name": "Soft & Cozy Socks",
-              "desc": "Warm up during chemo — centers are often chilly. Like a hug for your feet."
+              "desc": "Warm up the little piggies during chemotherapy since centers that administer treatment are often chilly."
             },
             {
               "name": "Queasy Pops",
-              "desc": "Drug-free drops from natural herbs and essential oils. Doctor recommended."
+              "desc": "Alleviate both nausea and dry mouth that often accompany chemotherapy with these tasty, drug free drops/pops made…"
             },
             {
               "name": "Nut & Dried Fruit Mix",
-              "desc": "Heart healthy snack packed with fiber, antioxidants and proteins."
+              "desc": "Boost energy and improve the immune system with this heart healthy, nutritious snack."
             },
             {
               "name": "Dark Chocolate Covered Berries",
-              "desc": "Pomegranate, blueberries and acai with powerful antioxidants."
+              "desc": "Boost the immune system with some healthy dark chocolate covered sweetness."
             },
             {
               "name": "Peanut Butter Sandwich Crackers",
-              "desc": "Protein-filled snack for energy."
+              "desc": "Alleviate the challenge of taking medicine on an empty stomach when you’re on-the-go, or simply wanting something…"
             }
           ]
         },
@@ -902,11 +923,11 @@
           "items": [
             {
               "name": "Puzzle Book",
-              "desc": "Crosswords, sudoku or word search — 40-50 puzzles. (types vary)"
+              "desc": "Stimulate your brain and redirect your focus with a puzzle book, such as crosswords, sudoku or word search."
             },
             {
               "name": "Brain Teaser Puzzle",
-              "desc": "3D distraction to keep mind and hands busy during treatment."
+              "desc": "Enhance concentration (and hand-eye coordination), with this self-contained 3D fun distraction to keep your mind and…"
             }
           ]
         },
@@ -915,7 +936,7 @@
           "items": [
             {
               "name": "Jelly Belly Cocktails",
-              "desc": "Fun mocktail jelly beans — without the hangover. Dairy Free, Gluten Free."
+              "desc": "Satisfy your craving for a Piña Colada, Strawberry Daiquiri, Pomegranate Cosmo, Peach Bellini, Mojito, or Margarita…"
             }
           ]
         }
@@ -956,7 +977,15 @@
           "author": "Verified Buyer",
           "date": "11/2025"
         }
-      ]
+      ],
+      "rating": 5.0,
+      "ratingBreakdown": {
+        "5": 77,
+        "4": 0,
+        "3": 0,
+        "2": 1,
+        "1": 0
+      }
     }
   ]
 }

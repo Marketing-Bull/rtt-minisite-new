@@ -21,8 +21,8 @@ or review counts in the generator.
 | Large Women's Chemo Care Package | `womens-large-chemo-basket.html` | 248 | $169.99 |
 | Medium Women's Chemo Care Package | `womens-medium-chemo-basket.html` | 235 | $129.99 |
 | Small Women's Chemo Care Package | `womens-small-chemo-basket.html` | 10338 | $74.99 |
-| Radiation Care Package | `radiation-basket.html` | 250 | $134.99 |
-| Medium Men's Chemo Care Package | `mens-medium-chemo-basket.html` | 232 | $119.99 |
+| Radiation Care Package | `radiation-basket.html` | 250 | $139.99 |
+| Medium Men's Chemo Care Package | `mens-medium-chemo-basket.html` | 232 | $129.99 |
 
 ## Quick start
 
@@ -78,35 +78,44 @@ wrangler.jsonc           Cloudflare static-assets Worker configuration
 ## How the 1b design maps to data
 
 Every section is driven by `product-data.json`. The layout follows the 1b
-mockup, adjusted for the feedback on the "RTT Mobile Site Whiteboard" (Canva):
-buy button above the fold, package-tile thumbnails plus the box-opening
-animation, a brief overview under the title, side-swipe reviews, popular
-add-ons instead of other-size suggestions, and a compact item list lower on
-the page.
+mockup as annotated in the "RTT Mobile Site Whiteboard" (Canva) review, and
+colors come from the rockthetreatment.com/shop theme: header gray `#606060`,
+brand purple `#701F8E`, orange `#ff6319` / `#fb4f14`, green `#81d742`, and the
+green top-bar gradient `#65993a → #96f24c`. Type is Catamaran, as on the
+desktop site.
 
 | Section (top to bottom) | Source |
 | --- | --- |
-| Top bar | Static ship-time line, or a countdown if the product opts in (below) |
-| Gallery + thumbnails | `heroImage`, then `mobileUi.animationImage` (box-opening GIF) if set, then the `galleryImages` package tiles |
-| Rating row | `rating`, `reviewCount` |
-| Overview chips | `categories[].name` (leading "For " stripped) |
-| Price | `mobileUi.displayPrice`, falling back to `price` |
-| Quantity + Add to Cart (above the fold) | `id` → `/cart/?add-to-cart=<id>&quantity=<n>` |
-| Checklist, stat tiles | `itemCount`, free-shipping threshold ($200), `totalSales` |
-| Side-swipe reviews | `reviews[]`, featured one first via `mobileUi.featuredReviewIndex` |
-| Popular add-ons | `upsellProducts` filtered by `mobileUi.addOns` (default: Worry Stone, Anti-Nausea Wristband, Tote, RTT Wristband, Knit Beanie, Warmies) |
-| Banner | `mobileUi.insideTitle` / `supportingHeadline`, plus `shortDesc` |
-| Compact item list | `categories[].items[]` (name + `desc`) with images from `itemImages` |
+| Top bar | "Free shipping over $200 · Flat rate shipping from $4.99", or a countdown if the product opts in (below) |
+| Header (dark gray, large logo) | Shop link to the hub, cart link to the store |
+| Gallery, rating row, thumbnails | `heroImage`, then `mobileUi.animationImage` (box-opening GIF) if set, then the `galleryImages` package tiles; `rating`, `reviewCount` |
+| Title + overview chips | `title`, `categories[].name` (leading "For " stripped) |
+| Price, quantity, Add to Cart (above the fold) | `mobileUi.displayPrice` or `price`; `id` → `/cart/?add-to-cart=<id>&quantity=<n>` |
+| Stat tiles | item count from `categories`, `rating`, ship time |
+| Celebration Bell note | Sold separately, links to `mobileUi.celebrationUrl` or `/bell/` |
+| Packed with Purpose (side scroll) | `mobileUi.featuredItems`, falling back to the first six items |
+| Our Fan Club (side scroll) | `reviews[]`, `ratingBreakdown` for the five-star percentage, "See more reviews" to the live page |
+| Encore! (side scroll add-ons) | `upsellProducts` filtered by `mobileUi.addOns` (default: blanket, Worry Stone, Anti-Nausea Wristband, tote, RTT wristband, Knit Beanie, Warmies, Warmies + Stone) |
+| Purple banner | `mobileUi.bannerTitle` (default "Nurturing Strength. Uplifting Spirits.") plus `supportingHeadline` or `shortDesc` |
+| Item list (polka-dot background) | `categories[].items[]` (name + `desc`) with images from `itemImages`; a placeholder tile is used when no image exists |
 | FAQs | `faqs` / `radiationFaqs` plus shared shipping FAQs |
-| Reviews summary | `rating`, `reviewCount`, link to the live reviews |
 
-Pronouns in copy ("What she rated 5 stars") come from `mobileUi.pronoun`
-(`she`, `he`, or `they`), inferred from the slug when unset.
+Pronouns come from `mobileUi.pronoun` (`she`, `he`, or `they`), inferred from
+the slug when unset. The sticky purchase bar stays hidden until the inline Add
+to Cart button has scrolled out of view and shares one quantity with it; set
+`mobileUi.stickyCart` to `false` to remove it for a product.
 
-The sticky purchase bar stays hidden until the inline Add to Cart button has
-scrolled out of view, and shares one quantity with it. Set
-`mobileUi.stickyCart` to `false` to remove it for a product (the inline button
-still carries the page).
+### Keeping data in sync with the live store
+
+`product-data.json` was reconciled against rockthetreatment.com on
+2026-09-10: prices, review counts, star breakdowns, and the "what's included"
+lists (with short descriptions taken from the live copy) match the store as of
+that date. Re-check before each launch; the live product pages are the source
+of truth. Items that still need a self-hosted image (they render as a
+placeholder tile): Lindi Skin Soothing Balm, Lindi Skin Cooler Roll, Dionis
+Goat Milk Body Lotion Pump, Aquaphor Healing Ointment, Jelly Belly Sport
+Beans, Pocket Pack Tissues. The "Warmies + YOU ROCK! Stone" add-on also needs
+an image before it appears.
 
 ### Opt-in promo elements
 
@@ -120,8 +129,8 @@ front of shoppers, so they render only when a product's `mobileUi` sets:
 | `shipCutoffHourEt` (e.g. `14`) | Live countdown to that Eastern-time cutoff on weekdays, otherwise the static ship line |
 | `stockNote` (e.g. `"Only a few left"`) | Orange note in the sticky purchase bar |
 
-The mockup's "free celebration gift" line is intentionally not carried over:
-the Celebration Bell is a separate product and is linked instead.
+The Celebration Bell is not included with any package; it is a separate
+end-of-treatment gift, so the page links to it rather than promising it.
 
 ## Product and review integrity
 
