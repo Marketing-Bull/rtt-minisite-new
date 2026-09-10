@@ -172,6 +172,34 @@ Cloudflare static-assets Worker (alternative):
 - Configuration: `wrangler.jsonc`
 - Production command: `npm run deploy`
 
-Optional: set `RTT_GTM_ID` at build time to emit a Google Tag Manager container;
-the pages already push `view_item`, `gallery_view`, `faq_open`, and
-`add_to_cart` into `window.dataLayer`.
+## Analytics
+
+Every page pushes events into `window.dataLayer` unconditionally. Set `RTT_GTM_ID`
+at build time to also emit the Google Tag Manager container that forwards them to
+GA4 — without a container the events are pushed but nothing consumes them.
+
+Each event carries `product_id` and `product_name` alongside the parameters below.
+
+| Event | Fires when | Parameters |
+| --- | --- | --- |
+| `view_item` | page load | `value` |
+| `product_gallery_view` | a gallery image is shown (thumbnail, swipe, arrow key) | `image_index` (1-based) |
+| `add_to_cart` | the in-page Add to Cart button is clicked | `quantity`, `value` |
+| `add_to_cart_sticky` | the sticky bar's Add to Cart button is clicked | `quantity`, `value` |
+| `rating_click` | the rating under the hero is clicked | `href` |
+| `celebration_bell` | the Celebration Bell link is clicked | `href` |
+| `addon_click` | an "Encore" add-on is clicked | `href` |
+| `faq_open` | an FAQ row is expanded | `question` |
+
+The event names and parameters match `Marketing-Bull/rtt-minisite`, so one GTM
+container and GA4 configuration serve both sites.
+
+**Cross-domain measurement is required.** The cart and checkout live on
+`www.rockthetreatment.com` while these pages are served from
+`m.rockthetreatment.com`. The GA4 config tag must list both hosts, otherwise the
+session splits at the moment of conversion and `add_to_cart` never ties to revenue.
+
+Two events from the original minisite have no counterpart here, by design rather
+than omission: `see_inside` and `full_contents` measured a collapsed contents list
+that this design renders inline, and `add_to_cart_final` measured a bottom-of-page
+CTA that the sticky bar replaces (`add_to_cart_sticky` covers that path).
