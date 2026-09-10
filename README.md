@@ -248,6 +248,30 @@ that list to decide which links may carry the `gclid` in the URL, which is how a
 Google Ads click stays attributable across the `m.` -> `www.` hop for a visitor
 who declined cookies.
 
+### Campaign parameters are forwarded to the store
+
+Cart and add-on links are static absolute URLs to `www`, so a `gclid` or `utm_*`
+that arrived on a landing page would not reach the store on its own — and for a
+visitor who declined cookies there is no `_gcl_*` cookie carrying the click
+either. Without this, WooCommerce's order attribution can record a paid order as
+a referral from `m.rockthetreatment.com` rather than the campaign that paid for it.
+
+On load, the page copies an allowlisted set of parameters from its own URL onto
+every outbound link to the store:
+
+`gclid`, `gbraid`, `wbraid`, `msclkid`, `fbclid`, and `utm_source`,
+`utm_medium`, `utm_campaign`, `utm_term`, `utm_content`, `utm_id`.
+
+Deliberately an allowlist rather than blanket forwarding: only these names
+travel, so nothing else on the query string is propagated. Existing parameters
+(`add-to-cart`, `quantity`) are never overwritten, values over 512 characters
+are dropped, and `URL`/`URLSearchParams` do the encoding. Where either API is
+missing the links stay exactly as generated.
+
+This covers add-on and Celebration Bell links too, not just the cart buttons —
+a buyer who enters the store through one of those is on the same conversion path
+and would otherwise arrive unattributed.
+
 ## Consent Mode v2
 
 These pages serve EEA traffic, so `generate.js` emits Consent Mode v2 defaults

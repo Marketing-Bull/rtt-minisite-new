@@ -332,6 +332,7 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
   var PRODUCT_NAME = "Large Women's Chemo Care Package";
   var UNIT_PRICE = 169.99;
   var GALLERY = [{"a":"/assets/uploads/2018/04/Women-Large-Chemo-Basket-Main.avif","w":"/assets/uploads/2018/04/Women-Large-Chemo-Basket-Main.webp","f":"/assets/uploads/2018/04/Women-Large-Chemo-Basket-Main.jpg"},{"a":"","w":"/assets/uploads/2018/04/Womens-Chemo-Large-Animation-Opt.webp","f":"/assets/uploads/2018/04/Womens-Chemo-Large-Animation-Opt-still.jpg"},{"a":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_dry-mouth.avif","w":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_dry-mouth.webp","f":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_dry-mouth.jpg"},{"a":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_nausea.avif","w":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_nausea.webp","f":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_nausea.jpg"},{"a":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_engaging-mind.avif","w":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_engaging-mind.webp","f":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_engaging-mind.jpg"}];
+  var STORE_BASE = "https://www.rockthetreatment.com";
   var CURRENCY = 'USD';
   var ITEM_CATEGORY = "Chemo Care Packages";
   window.dataLayer = window.dataLayer || [];
@@ -367,6 +368,36 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
     }, detail || {}));
   }
   trackEcommerce('view_item', 1);
+
+  // Carry the campaign across to the store. Cart and add-on links are static
+  // absolute URLs, so a gclid or utm_* that arrived on THIS page does not reach
+  // www on its own -- and for a visitor who declined cookies there is no _gcl_*
+  // cookie carrying the click either. Without this, WooCommerce order
+  // attribution can record a paid order as a referral from this subdomain.
+  // An allowlist, not blanket forwarding: only these names travel, existing
+  // params (add-to-cart, quantity) are never overwritten, and URL/URLSearchParams
+  // do the encoding. Absent either API the page simply keeps its static links.
+  (function(){
+    var CAMPAIGN_PARAMS = ['gclid','gbraid','wbraid','msclkid','fbclid',
+      'utm_source','utm_medium','utm_campaign','utm_term','utm_content','utm_id'];
+    var carry = [];
+    try {
+      var incoming = new URLSearchParams(window.location.search);
+      CAMPAIGN_PARAMS.forEach(function(name){
+        var value = incoming.get(name);
+        // Cap the value so a junk query string cannot bloat every href.
+        if (value && value.length <= 512) carry.push([name, value]);
+      });
+    } catch (e) { return; }
+    if (!carry.length) return;
+    var links = document.querySelectorAll('a[href^="' + STORE_BASE + '"]');
+    Array.prototype.forEach.call(links, function(a){
+      var url;
+      try { url = new URL(a.href); } catch (e) { return; }
+      carry.forEach(function(p){ if (!url.searchParams.has(p[0])) url.searchParams.set(p[0], p[1]); });
+      a.href = url.toString();
+    });
+  })();
 
   var mainImg = document.getElementById('mainImg');
   var mainAvif = document.getElementById('mainSrcAvif');

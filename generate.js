@@ -584,6 +584,7 @@ ${stickyHtml}
   var PRODUCT_NAME = ${JSON.stringify(product.title)};
   var UNIT_PRICE = ${priceNum};
   var GALLERY = ${JSON.stringify(gallery)};
+  var STORE_BASE = ${JSON.stringify(wwwBase)};
   var CURRENCY = 'USD';
   var ITEM_CATEGORY = ${JSON.stringify(isRadiation ? 'Radiation Care Packages' : 'Chemo Care Packages')};
   window.dataLayer = window.dataLayer || [];
@@ -619,6 +620,36 @@ ${stickyHtml}
     }, detail || {}));
   }
   trackEcommerce('view_item', 1);
+
+  // Carry the campaign across to the store. Cart and add-on links are static
+  // absolute URLs, so a gclid or utm_* that arrived on THIS page does not reach
+  // www on its own -- and for a visitor who declined cookies there is no _gcl_*
+  // cookie carrying the click either. Without this, WooCommerce order
+  // attribution can record a paid order as a referral from this subdomain.
+  // An allowlist, not blanket forwarding: only these names travel, existing
+  // params (add-to-cart, quantity) are never overwritten, and URL/URLSearchParams
+  // do the encoding. Absent either API the page simply keeps its static links.
+  (function(){
+    var CAMPAIGN_PARAMS = ['gclid','gbraid','wbraid','msclkid','fbclid',
+      'utm_source','utm_medium','utm_campaign','utm_term','utm_content','utm_id'];
+    var carry = [];
+    try {
+      var incoming = new URLSearchParams(window.location.search);
+      CAMPAIGN_PARAMS.forEach(function(name){
+        var value = incoming.get(name);
+        // Cap the value so a junk query string cannot bloat every href.
+        if (value && value.length <= 512) carry.push([name, value]);
+      });
+    } catch (e) { return; }
+    if (!carry.length) return;
+    var links = document.querySelectorAll('a[href^="' + STORE_BASE + '"]');
+    Array.prototype.forEach.call(links, function(a){
+      var url;
+      try { url = new URL(a.href); } catch (e) { return; }
+      carry.forEach(function(p){ if (!url.searchParams.has(p[0])) url.searchParams.set(p[0], p[1]); });
+      a.href = url.toString();
+    });
+  })();
 
   var mainImg = document.getElementById('mainImg');
   var mainAvif = document.getElementById('mainSrcAvif');
