@@ -25,10 +25,16 @@ fs.mkdirSync(outDir, { recursive: true });
 // out of the index by default.
 const ALLOW_INDEXING = false;
 
-// Optional Google Tag Manager container. Pages push view_item / add_to_cart /
-// faq_open / gallery_view into window.dataLayer either way; set RTT_GTM_ID to
-// emit the container so those events reach GA4. Cross-domain measurement must
-// include www.rockthetreatment.com (cart/checkout host).
+// Google Tag Manager container for the minisite. The pages already push a full
+// event set (view_item, add_to_cart, add_to_cart_sticky, product_gallery_view,
+// faq_open, rating_click, celebration_bell, addon_click) into window.dataLayer —
+// but without a container nothing consumes them, so none of it reaches GA4.
+// Set RTT_GTM_ID (or hardcode below) to emit the container.
+//
+// Cart/checkout lives on a different host (www.rockthetreatment.com), so the GA4
+// config tag in this container MUST enable cross-domain measurement for both
+// m.rockthetreatment.com and www.rockthetreatment.com — otherwise the session
+// splits at the exact moment of conversion and add_to_cart never ties to revenue.
 const GTM_ID = process.env.RTT_GTM_ID || '';
 
 const { wwwBase, mBase, imageBase, logo, itemImages, upsellProducts, faqs, radiationFaqs, products } = data;
@@ -497,7 +503,7 @@ ${headerHtml()}
     <div id="galleryStage" tabindex="0" aria-label="Use left and right arrow keys to browse product images">
       ${picture(heroUrl, { id: 'mainImg', cls: 'gallery-main', alt: product.title, priority: true, lazy: false, avifId: 'mainSrcAvif', webpId: 'mainSrcWebp' })}
     </div>
-    <div class="rating-row"><a href="#reviews"><span class="stars" aria-hidden="true">★★★★★</span><span>${fmtRating(rating)}</span><span class="count">· ${fmtInt(product.reviewCount)} reviews</span></a></div>
+    <div class="rating-row"><a href="#reviews" data-track="rating_click"><span class="stars" aria-hidden="true">★★★★★</span><span>${fmtRating(rating)}</span><span class="count">· ${fmtInt(product.reviewCount)} reviews</span></a></div>
     <div class="thumbs" id="galleryThumbs" aria-label="Choose a product image">
 ${galleryImages.map((u, i) => `      <button class="thumb" type="button" data-index="${i}" aria-label="Show image ${i + 1} of ${galleryImages.length}" aria-current="${i === 0 ? 'true' : 'false'}">${picture(u, { alt: '', lazy: false })}</button>`).join('\n')}
     </div>
@@ -543,7 +549,7 @@ ${stickyHtml}
   function track(eventName, detail){
     window.dataLayer.push(Object.assign({event:eventName, product_id:PRODUCT_ID, product_name:PRODUCT_NAME}, detail || {}));
   }
-  track('view_item', {price: UNIT_PRICE});
+  track('view_item', {value: UNIT_PRICE});
 
   var mainImg = document.getElementById('mainImg');
   var mainAvif = document.getElementById('mainSrcAvif');
@@ -561,7 +567,7 @@ ${stickyHtml}
     if (mainWebp) mainWebp.srcset = g.w || '';
     mainImg.src = g.f;
     thumbs.forEach(function(t, k){ t.setAttribute('aria-current', k === i ? 'true' : 'false'); });
-    track('gallery_view', {index: i});
+    track('product_gallery_view', {image_index: i + 1});
   }
   thumbs.forEach(function(t, i){ t.addEventListener('click', function(){ show(i); }); });
   var startX = 0, dx = 0, swiping = false;
@@ -598,7 +604,8 @@ ${stickyHtml}
       row.setAttribute('data-open', open ? 'false' : 'true');
       btn.setAttribute('aria-expanded', open ? 'false' : 'true');
       panel.style.maxHeight = open ? '0' : panel.scrollHeight + 'px';
-      if (!open) track('faq_open', {question: btn.textContent.trim()});
+      // The label span only — btn.textContent would append the chevron glyph.
+      if (!open) track('faq_open', {question: (btn.querySelector('span') || btn).textContent.trim()});
     });
   });
 
