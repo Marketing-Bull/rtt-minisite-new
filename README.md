@@ -111,11 +111,10 @@ to Cart button has scrolled out of view and shares one quantity with it; set
 2026-09-10: prices, review counts, star breakdowns, and the "what's included"
 lists (with short descriptions taken from the live copy) match the store as of
 that date. Re-check before each launch; the live product pages are the source
-of truth. Items that still need a self-hosted image (they render as a
-placeholder tile): Lindi Skin Soothing Balm, Lindi Skin Cooler Roll, Dionis
-Goat Milk Body Lotion Pump, Aquaphor Healing Ointment, Jelly Belly Sport
-Beans, Pocket Pack Tissues. The "Warmies + YOU ROCK! Stone" add-on also needs
-an image before it appears.
+of truth. Item and add-on images are self-hosted copies of the store's
+uploads (the store's image sitemaps at `/product-sitemap.xml` and
+`/post-sitemap.xml` are the quickest way to find a file by name); an item
+with no entry in `itemImages` renders as a placeholder tile.
 
 ### Opt-in promo elements
 
