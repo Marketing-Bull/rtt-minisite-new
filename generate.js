@@ -230,9 +230,6 @@ h1{font-weight:800;font-size:21px;line-height:1.2;color:var(--text);margin:4px 0
 .buy-row{display:flex;align-items:center;gap:10px;margin-top:10px}
 .buy-note{display:flex;justify-content:space-between;font-size:11.5px;color:var(--green);font-weight:700;margin-top:8px}
 .buy-note .r{color:var(--muted);font-weight:600}
-.qty{display:flex;align-items:center;border:1px solid #ddd;border-radius:12px;overflow:hidden;flex:0 0 auto}
-.qty button{width:38px;height:54px;border:none;background:#fff;font-size:20px;color:#333;cursor:pointer}
-.qty output{width:28px;text-align:center;font-weight:800;font-size:15px}
 .atc{flex:1;display:flex;align-items:center;justify-content:center;height:54px;background:var(--orange);color:#fff;border-radius:12px;font-weight:800;font-size:16px;letter-spacing:.02em;text-transform:uppercase;box-shadow:0 8px 20px -6px rgba(255,99,25,.7);white-space:nowrap}
 .atc:hover{color:#fff;background:var(--orange-dark)}
 .stats{display:flex;gap:8px;margin-top:14px}
@@ -304,7 +301,7 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
 .sticky .meta{flex:1;min-width:0}
 .sticky .meta .t{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sticky .meta .p{font-size:15px;font-weight:800}
-.sticky .atc{flex:0 0 auto;padding:0 18px;height:48px;font-size:14px}
+.sticky .atc{flex:0 0 auto;padding:0 22px;height:48px;font-size:14px}
 .sticky-pad{height:0;transition:height .25s ease}
 .sticky-pad.is-visible{height:84px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important}}
@@ -406,15 +403,8 @@ function generatePage(product) {
         <span class="save">SAVE ${escHtml(fmtPrice(compareAt - priceNum).replace('.00', ''))}</span>` : ''}
       </div>`;
 
-  const qtyHtml = `        <div class="qty" data-qty>
-          <button type="button" data-qty-dec aria-label="Decrease quantity">−</button>
-          <output data-qty-value aria-live="polite">1</output>
-          <button type="button" data-qty-inc aria-label="Increase quantity">+</button>
-        </div>`;
-
   const buyRow = `      <div class="buy-row" id="buyRow">
-${qtyHtml}
-        <a class="atc js-cart-btn" href="${cartUrl}" data-track="add_to_cart">Add to Cart · <span data-total>${escHtml(price)}</span></a>
+        <a class="atc js-cart-btn" href="${cartUrl}" data-track="add_to_cart">Add to Cart · ${escHtml(price)}</a>
       </div>
       <div class="buy-note"><span>🔒 Secure checkout</span><span class="r">${stockNote ? escHtml(stockNote) : 'Free gift note at checkout'}</span></div>`;
 
@@ -470,8 +460,7 @@ ${cat.items.map(it => `      <li>${picture(itemImg(it.name), { alt: '', width: 4
   <div class="sticky-pad" id="stickyPad"></div>
   <aside class="sticky" id="stickyBar" aria-label="Purchase" aria-hidden="true">
     <div class="row">
-      <div class="meta"><div class="t">${escHtml(ui.stickyLabel || product.title)}</div><div class="p" data-total>${escHtml(price)}</div></div>
-${qtyHtml}
+      <div class="meta"><div class="t">${escHtml(ui.stickyLabel || product.title)}</div><div class="p">${escHtml(price)}</div></div>
       <a class="atc js-cart-btn" href="${cartUrl}" data-track="add_to_cart_sticky">Add to Cart</a>
     </div>
   </aside>` : '';
@@ -584,18 +573,8 @@ ${stickyHtml}
     if (e.key === 'ArrowRight') { e.preventDefault(); show(current + 1); }
   });
 
-  var qtyOuts = Array.prototype.slice.call(document.querySelectorAll('[data-qty-value]'));
   var cartBtns = Array.prototype.slice.call(document.querySelectorAll('.js-cart-btn'));
-  var totals = Array.prototype.slice.call(document.querySelectorAll('[data-total]'));
-  var qty = 1;
-  function syncCart(){
-    qtyOuts.forEach(function(o){ o.textContent = String(qty); });
-    cartBtns.forEach(function(b){ b.href = b.href.replace(/([?&])quantity=\\d+/, '$1quantity=' + qty); });
-    totals.forEach(function(t){ t.textContent = '$' + (UNIT_PRICE * qty).toFixed(2); });
-  }
-  document.querySelectorAll('[data-qty-dec]').forEach(function(b){ b.addEventListener('click', function(){ qty = Math.max(1, qty - 1); syncCart(); }); });
-  document.querySelectorAll('[data-qty-inc]').forEach(function(b){ b.addEventListener('click', function(){ qty = Math.min(20, qty + 1); syncCart(); }); });
-  cartBtns.forEach(function(b){ b.addEventListener('click', function(){ track(b.getAttribute('data-track') || 'add_to_cart', {quantity: qty, value: UNIT_PRICE * qty}); }); });
+  cartBtns.forEach(function(b){ b.addEventListener('click', function(){ track(b.getAttribute('data-track') || 'add_to_cart', {quantity: 1, value: UNIT_PRICE}); }); });
   document.querySelectorAll('[data-track]:not(.js-cart-btn)').forEach(function(el){ el.addEventListener('click', function(){ track(el.getAttribute('data-track'), {href: el.href}); }); });
 
   var sticky = document.getElementById('stickyBar');

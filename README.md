@@ -90,7 +90,7 @@ desktop site.
 | Header (dark gray, large logo) | Shop link to the hub, cart link to the store |
 | Gallery, rating row, thumbnails | `heroImage`, then `mobileUi.animationImage` (box-opening GIF) if set, then the `galleryImages` package tiles; `rating`, `reviewCount` |
 | Title + overview chips | `title`, `categories[].name` (leading "For " stripped) |
-| Price, quantity, Add to Cart (above the fold) | `mobileUi.displayPrice` or `price`; `id` → `/cart/?add-to-cart=<id>&quantity=<n>` |
+| Price and Add to Cart (above the fold) | `mobileUi.displayPrice` or `price`; `id` → `/cart/?add-to-cart=<id>&quantity=1` (quantity is changed in the store cart) |
 | Stat tiles | item count from `categories`, `rating`, ship time |
 | Celebration Bell note | Sold separately, links to `mobileUi.celebrationUrl` or `/bell/` |
 | Packed with Purpose (side scroll) | `mobileUi.featuredItems`, falling back to the first six items |
@@ -102,7 +102,7 @@ desktop site.
 
 Pronouns come from `mobileUi.pronoun` (`she`, `he`, or `they`), inferred from
 the slug when unset. The sticky purchase bar stays hidden until the inline Add
-to Cart button has scrolled out of view and shares one quantity with it; set
+to Cart button has scrolled out of view; set
 `mobileUi.stickyCart` to `false` to remove it for a product.
 
 ### Keeping data in sync with the live store
@@ -154,7 +154,7 @@ Before merging:
 
 - `npm run build` completes and `npm run check` reports 0 missing references.
 - Gallery thumbnails, keyboard arrows, swipe, and FAQ accordions work.
-- Quantity changes update the cart link and the button total.
+- Both Add to Cart buttons point at the store cart with the right product ID.
 - The inline Add to Cart button is visible without scrolling on a 390×844 viewport.
 - The sticky bar appears only after scrolling past it and does not cover the footer.
 - Canonical URLs point to the corresponding live WooCommerce product page.
