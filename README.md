@@ -178,28 +178,124 @@ Every page pushes events into `window.dataLayer` unconditionally. Set `RTT_GTM_I
 at build time to also emit the Google Tag Manager container that forwards them to
 GA4 — without a container the events are pushed but nothing consumes them.
 
-Each event carries `product_id` and `product_name` alongside the parameters below.
+Every event carries `product_id` and `product_name` at the top level.
+
+### GA4 ecommerce events
+
+`view_item` and `add_to_cart` use GA4's ecommerce shape: an `ecommerce` object
+holding `currency`, `value` and a one-entry `items` array (`item_id`,
+`item_name`, `item_brand`, `item_category`, `price`, `quantity`, `currency`).
+The `items` array is what populates GA4's ecommerce reports — item revenue,
+cart-to-view rate, product performance. A bare `value` leaves those reports empty.
+
+Each is preceded by a `{ecommerce: null}` push, the standard GTM idiom for
+clearing the previous ecommerce object so its fields cannot bleed into the next
+event.
+
+| Event | Fires when | Extra parameters |
+| --- | --- | --- |
+| `view_item` | page load | — |
+| `add_to_cart` | any Add to Cart button is clicked | `cta_location`: `inline` or `sticky` |
+
+Both cart CTAs deliberately fire the same standard `add_to_cart` name. GA4 only
+applies ecommerce treatment to its own event names, so a separate
+`add_to_cart_sticky` would drop the sticky bar — the dominant CTA on mobile —
+out of the ecommerce funnel entirely. `cta_location` keeps the two separable in
+reports without that cost.
+
+In GTM, send these with a GA4 Event tag whose **Send Ecommerce data** is set to
+**Data Layer**.
+
+### Custom events
+
+Flat parameters, no `ecommerce` object.
 
 | Event | Fires when | Parameters |
 | --- | --- | --- |
-| `view_item` | page load | `value` |
 | `product_gallery_view` | a gallery image is shown (thumbnail, swipe, arrow key) | `image_index` (1-based) |
-| `add_to_cart` | the in-page Add to Cart button is clicked | `quantity`, `value` |
-| `add_to_cart_sticky` | the sticky bar's Add to Cart button is clicked | `quantity`, `value` |
 | `rating_click` | the rating under the hero is clicked | `href` |
 | `celebration_bell` | the Celebration Bell link is clicked | `href` |
 | `addon_click` | an "Encore" add-on is clicked | `href` |
 | `faq_open` | an FAQ row is expanded | `question` |
 
-The event names and parameters match `Marketing-Bull/rtt-minisite`, so one GTM
-container and GA4 configuration serve both sites.
+### Connecting this to the store on www
 
-**Cross-domain measurement is required.** The cart and checkout live on
-`www.rockthetreatment.com` while these pages are served from
-`m.rockthetreatment.com`. The GA4 config tag must list both hosts, otherwise the
-session splits at the moment of conversion and `add_to_cart` never ties to revenue.
+The cart and checkout live on `www.rockthetreatment.com` while these pages are
+served from `m.rockthetreatment.com`. Both are subdomains of one registrable
+domain, so GA4 writes its `_ga` cookie at `.rockthetreatment.com` and the client
+ID and session carry across the hop automatically. **Cross-domain measurement
+(the `_gl` linker) is not needed** — that mechanism is for genuinely different
+domains.
 
-Two events from the original minisite have no counterpart here, by design rather
-than omission: `see_inside` and `full_contents` measured a collapsed contents list
-that this design renders inline, and `add_to_cart_final` measured a bottom-of-page
-CTA that the sticky bar replaces (`add_to_cart_sticky` covers that path).
+What does need to be true, in order of how badly it breaks things:
+
+1. **Both hosts must send to the same GA4 measurement ID.** This is the real
+   requirement. If this container reports to a different property than the
+   WooCommerce site, nothing stitches and `add_to_cart` here can never tie to
+   revenue there. Check the measurement ID in the GA4 tag on `www` before
+   configuring anything else.
+2. **Add `rockthetreatment.com` to the stream's unwanted-referrals list**
+   (GA4 Admin → Data Streams → the web stream → Configure tag settings → List
+   unwanted referrals). Without it the `m.` → `www.` hop can be recorded as a
+   referral and reattribute the session away from the campaign that earned it.
+3. **`purchase` must fire on `www`.** These pages can only report up to
+   `add_to_cart`; `begin_checkout` and `purchase` come from WooCommerce. Revenue
+   attribution is only end-to-end once that side emits GA4 ecommerce events too.
+
+Listing both hosts under "Configure your domains" is not what makes the session
+carry across — but do list them anyway: Consent Mode's `url_passthrough` uses
+that list to decide which links may carry the `gclid` in the URL, which is how a
+Google Ads click stays attributable across the `m.` -> `www.` hop for a visitor
+who declined cookies.
+
+## Consent Mode v2
+
+These pages serve EEA traffic, so `generate.js` emits Consent Mode v2 defaults
+**before** the GTM container — Google requires a consent state to exist before
+any Google tag runs. Everything non-essential starts `denied` in the EU 27, the
+rest of the EEA, the UK and Switzerland (`CONSENT_DENIED_REGIONS` in
+`generate.js`); `security_storage` is always granted, and defaults outside those
+regions are granted. `wait_for_update: 500` holds tags briefly so a fast choice
+is not missed.
+
+The generator also sets `ads_data_redaction` (strips ad click identifiers from
+pings while `ad_storage` is denied) and `url_passthrough` (carries the `gclid`
+in the URL when cookies are unavailable).
+
+Nothing is emitted at all when `RTT_GTM_ID` is unset.
+
+### This does not include a CMP
+
+`generate.js` sets the consent *defaults*. It does not load a Consent Management
+Platform, and nothing here can. Without one, nothing ever calls
+`gtag('consent', 'update', ...)`, consent stays denied for every EEA visitor,
+and no measurement is collected from them.
+
+Before running EEA ads you need:
+
+1. **A Google-certified CMP** on these pages — added through the GTM container
+   or the page itself. Google requires a certified CMP for ads served in the
+   EEA, and TCF integration if you are using the TCF path.
+2. **The same CMP on `www.rockthetreatment.com`**, with its consent cookie
+   written at `.rockthetreatment.com` so a visitor who consents here is not
+   prompted again at checkout — and so their choice actually applies to the
+   conversion tag.
+3. **A decision on Basic vs Advanced consent mode.** The defaults emitted here
+   support Advanced (tags load and send cookieless pings when denied, which is
+   what enables conversion modeling). Basic means blocking the container
+   entirely until consent, which forgoes modeling. Advanced generally performs
+   better for ads; Basic is the more conservative reading. This is a decision
+   for whoever signs off on privacy, not a technical default.
+
+Verify with GTM Preview and the Google Tag Assistant that consent shows as
+denied before a choice and updates after it.
+
+### Not tracked
+
+The hub page (`index.html`) emits no events — package card clicks are currently
+invisible, so the hub-to-product step of the funnel cannot be measured.
+
+Three events from the original minisite have no counterpart here, by design
+rather than omission: `see_inside` and `full_contents` measured a collapsed
+contents list that this design renders inline, and `add_to_cart_final` measured
+a bottom-of-page CTA that the sticky bar replaces.

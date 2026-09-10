@@ -26,15 +26,19 @@ fs.mkdirSync(outDir, { recursive: true });
 const ALLOW_INDEXING = false;
 
 // Google Tag Manager container for the minisite. The pages already push a full
-// event set (view_item, add_to_cart, add_to_cart_sticky, product_gallery_view,
-// faq_open, rating_click, celebration_bell, addon_click) into window.dataLayer —
-// but without a container nothing consumes them, so none of it reaches GA4.
-// Set RTT_GTM_ID (or hardcode below) to emit the container.
+// event set (view_item, add_to_cart, product_gallery_view, faq_open,
+// rating_click, celebration_bell, addon_click) into window.dataLayer — but
+// without a container nothing consumes them, so none of it reaches GA4.
+// Set RTT_GTM_ID (or hardcode below) to emit the container. The container is
+// always preceded by the Consent Mode v2 defaults below.
 //
-// Cart/checkout lives on a different host (www.rockthetreatment.com), so the GA4
-// config tag in this container MUST enable cross-domain measurement for both
-// m.rockthetreatment.com and www.rockthetreatment.com — otherwise the session
-// splits at the exact moment of conversion and add_to_cart never ties to revenue.
+// Cart/checkout lives on www.rockthetreatment.com while these pages are served
+// from m.rockthetreatment.com. Those are subdomains of one registrable domain,
+// so the _ga cookie is shared and the session carries across on its own — no
+// cross-domain linker needed. What DOES matter: both hosts must send to the
+// same GA4 measurement ID, and rockthetreatment.com belongs in the stream's
+// unwanted-referrals list so the m. -> www. hop is not logged as a referral and
+// credited away from the original campaign. See README for the full setup.
 const GTM_ID = process.env.RTT_GTM_ID || '';
 
 const { wwwBase, mBase, imageBase, logo, itemImages, upsellProducts, faqs, radiationFaqs, products } = data;
@@ -186,7 +190,42 @@ const DEFAULT_ADD_ONS = [
   'Warmies® + YOU ROCK! Stone',
 ];
 
-const gtmHead = GTM_ID ? `<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');</script>\n` : '';
+// ---- Consent Mode v2 -------------------------------------------------------
+// Google requires a consent state to exist BEFORE any Google tag runs, so this
+// block is emitted ahead of the GTM container. Everything non-essential starts
+// denied in the regions below; a Consent Management Platform then calls
+// gtag('consent','update',...) once the visitor chooses, and wait_for_update
+// holds tags briefly so a fast choice is not missed.
+//
+// This block is CMP-agnostic and required whichever CMP is used. It does NOT
+// load a CMP. Without one nothing ever calls 'update', consent stays denied,
+// and no measurement is collected in these regions. Add the CMP via the GTM
+// container (or the page) and use the same CMP on www.rockthetreatment.com so
+// a visitor who consents here is not prompted again at checkout.
+//
+// EU 27 + the rest of the EEA (IS, LI, NO), plus the UK and Switzerland, which
+// have their own equivalent regimes. Outside these, defaults are granted --
+// review that with whoever signs off on privacy before launch.
+const CONSENT_DENIED_REGIONS = [
+  'AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT',
+  'LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE',
+  'IS','LI','NO','GB','CH',
+];
+
+// ads_data_redaction strips ad click identifiers from pings while ad_storage is
+// denied. url_passthrough carries the gclid in the URL when cookies are not
+// available, which is what keeps a Google Ads click attributable across the
+// m. -> www. hop for a visitor who declined cookies. For that to reach the
+// store, list both hosts under the GA4 stream's "Configure your domains".
+const consentHead = GTM_ID ? `<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',functionality_storage:'denied',personalization_storage:'denied',security_storage:'granted',region:${JSON.stringify(CONSENT_DENIED_REGIONS)},wait_for_update:500});
+gtag('consent','default',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted',functionality_storage:'granted',personalization_storage:'granted',security_storage:'granted'});
+gtag('set','ads_data_redaction',true);
+gtag('set','url_passthrough',true);
+</script>\n` : '';
+
+const gtmHead = GTM_ID ? consentHead + `<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');</script>\n` : '';
 const gtmBody = GTM_ID ? `<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${GTM_ID}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>\n` : '';
 
 const FONTS = 'https://fonts.googleapis.com/css2?family=Catamaran:wght@400;500;600;700;800&display=swap';
@@ -410,7 +449,7 @@ function generatePage(product) {
       </div>`;
 
   const buyRow = `      <div class="buy-row" id="buyRow">
-        <a class="atc js-cart-btn" href="${cartUrl}" data-track="add_to_cart">Add to Cart · ${escHtml(price)}</a>
+        <a class="atc js-cart-btn" href="${cartUrl}" data-cta-location="inline">Add to Cart · ${escHtml(price)}</a>
       </div>
       <div class="buy-note"><span>🔒 Secure checkout</span><span class="r">${stockNote ? escHtml(stockNote) : 'Free gift note at checkout'}</span></div>`;
 
@@ -467,7 +506,7 @@ ${cat.items.map(it => `      <li>${picture(itemImg(it.name), { alt: '', width: 4
   <aside class="sticky" id="stickyBar" aria-label="Purchase" aria-hidden="true">
     <div class="row">
       <div class="meta"><div class="t">${escHtml(ui.stickyLabel || product.title)}</div><div class="p">${escHtml(price)}</div></div>
-      <a class="atc js-cart-btn" href="${cartUrl}" data-track="add_to_cart_sticky">Add to Cart</a>
+      <a class="atc js-cart-btn" href="${cartUrl}" data-cta-location="sticky">Add to Cart</a>
     </div>
   </aside>` : '';
 
@@ -545,11 +584,41 @@ ${stickyHtml}
   var PRODUCT_NAME = ${JSON.stringify(product.title)};
   var UNIT_PRICE = ${priceNum};
   var GALLERY = ${JSON.stringify(gallery)};
+  var CURRENCY = 'USD';
+  var ITEM_CATEGORY = ${JSON.stringify(isRadiation ? 'Radiation Care Packages' : 'Chemo Care Packages')};
   window.dataLayer = window.dataLayer || [];
+
+  // Custom (non-ecommerce) events — flat parameters.
   function track(eventName, detail){
     window.dataLayer.push(Object.assign({event:eventName, product_id:PRODUCT_ID, product_name:PRODUCT_NAME}, detail || {}));
   }
-  track('view_item', {value: UNIT_PRICE});
+
+  // GA4 ecommerce events. The items array is what populates GA4's ecommerce
+  // reports (item revenue, cart-to-view rate); value on its own leaves them
+  // empty. Pushing ecommerce:null first clears the previous ecommerce object
+  // so its fields cannot bleed into the next event.
+  function trackEcommerce(eventName, quantity, detail){
+    window.dataLayer.push({ecommerce: null});
+    window.dataLayer.push(Object.assign({
+      event: eventName,
+      product_id: PRODUCT_ID,
+      product_name: PRODUCT_NAME,
+      ecommerce: {
+        currency: CURRENCY,
+        value: Math.round(UNIT_PRICE * quantity * 100) / 100,
+        items: [{
+          item_id: String(PRODUCT_ID),
+          item_name: PRODUCT_NAME,
+          item_brand: 'Rock The Treatment',
+          item_category: ITEM_CATEGORY,
+          price: UNIT_PRICE,
+          quantity: quantity,
+          currency: CURRENCY
+        }]
+      }
+    }, detail || {}));
+  }
+  trackEcommerce('view_item', 1);
 
   var mainImg = document.getElementById('mainImg');
   var mainAvif = document.getElementById('mainSrcAvif');
@@ -580,7 +649,7 @@ ${stickyHtml}
   });
 
   var cartBtns = Array.prototype.slice.call(document.querySelectorAll('.js-cart-btn'));
-  cartBtns.forEach(function(b){ b.addEventListener('click', function(){ track(b.getAttribute('data-track') || 'add_to_cart', {quantity: 1, value: UNIT_PRICE}); }); });
+  cartBtns.forEach(function(b){ b.addEventListener('click', function(){ trackEcommerce('add_to_cart', 1, {cta_location: b.getAttribute('data-cta-location') || 'inline'}); }); });
   document.querySelectorAll('[data-track]:not(.js-cart-btn)').forEach(function(el){ el.addEventListener('click', function(){ track(el.getAttribute('data-track'), {href: el.href}); }); });
 
   var sticky = document.getElementById('stickyBar');
