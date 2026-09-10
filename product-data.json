@@ -29,7 +29,12 @@
     "Mio Water Enhancer": "/2019/07/Mio.jpg",
     "Aloe Vera Skin Gel": "/2019/05/aloe-gel.jpg",
     "Calendula Cream": "/2019/05/calendula-cream.jpg",
-    "Aquaphor Healing Ointment": "/2019/05/aquaphor.jpg"
+    "Aquaphor Healing Ointment": "/2018/04/11-Aquaphor.jpg",
+    "Lindi Skin Soothing Balm": "/2019/07/soothing-balm.jpg",
+    "Lindi Skin Cooler Roll": "/2019/07/lindi-cooler-roll.jpg",
+    "Dionis Goat Milk Body Lotion Pump": "/2019/07/body-lotion.jpg",
+    "Jelly Belly Sport Beans": "/2019/07/sport-beans.jpg",
+    "Pocket Pack Tissues": "/2018/05/tissues-mouchoirs.jpg"
   },
   "upsellProducts": [
     {
@@ -91,6 +96,11 @@
       "name": "Empower Kit",
       "image": "/2020/07/Copy-of-RTT-can-no-filter-green_2.jpg",
       "url": "/empower-kit/"
+    },
+    {
+      "name": "Warmies® + YOU ROCK! Stone",
+      "image": "/2026/04/Hippo-and-Stone-Thumb-isolated-400x400.png",
+      "url": "/hippo-warmies-you-rock-worry-stone-package-combination/"
     }
   ],
   "faqs": [
