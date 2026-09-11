@@ -27,8 +27,8 @@ const ALLOW_INDEXING = false;
 
 // Google Tag Manager container for the minisite. The pages already push a full
 // event set (view_item, add_to_cart, product_gallery_view, faq_open,
-// rating_click, celebration_bell, addon_click) into window.dataLayer — but
-// without a container nothing consumes them, so none of it reaches GA4.
+// rating_click, celebration_bell) into window.dataLayer — but without a
+// container nothing consumes them, so none of it reaches GA4.
 // Set RTT_GTM_ID (or hardcode below) to emit the container. The container is
 // always preceded by the Consent Mode v2 defaults below.
 //
@@ -176,20 +176,6 @@ const SHIPPING_FAQS = [
   { q: 'Is the Celebration Bell included?', a: 'The Celebration Bell is a separate end-of-treatment gift and must be ordered separately.' },
 ];
 
-// Popular add-ons that complement every package (Stacy's whiteboard list:
-// Rock, Nausea Wrist Band, Tote, RTT Wristband, Hat, Warmies). These replace
-// the mockup's "other size" suggestions. Override per product via mobileUi.addOns.
-const DEFAULT_ADD_ONS = [
-  'Cozy Companion™ Blanket',
-  'YOU ROCK! Worry Stone',
-  'Anti-Nausea Wristband',
-  'Reusable Folding Tote',
-  '#ROCKtheTREATMENT Wristband',
-  'Knit Beanie',
-  'Warmies® Plush Animal',
-  'Warmies® + YOU ROCK! Stone',
-];
-
 // ---- Consent Mode v2 -------------------------------------------------------
 // Google requires a consent state to exist BEFORE any Google tag runs, so this
 // block is emitted ahead of the GTM container. Everything non-essential starts
@@ -305,11 +291,6 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
 .quote p{font-size:13px;line-height:1.45;color:#333;margin:5px 0 0;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 .quote .who{font-size:11.5px;color:var(--faint);margin-top:7px;font-weight:700}
 .fan .more{display:inline-flex;align-items:center;justify-content:center;margin-top:12px;height:38px;padding:0 16px;border-radius:8px;background:var(--orange);color:#fff;font-size:13px;font-weight:800}
-.encore h2{margin-bottom:2px}
-.encore .sub{font-size:12.5px;color:var(--muted);margin:0 0 10px}
-.addon{flex:0 0 118px;scroll-snap-align:start;background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden;text-align:center;display:block;color:#333}
-.addon img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
-.addon span{display:block;font-size:11px;font-weight:700;padding:6px 5px 9px;line-height:1.25}
 .banner{background:var(--purple);color:#fff;text-align:center;padding:24px 20px;margin-top:22px}
 .banner h2{font-weight:800;font-size:22px;line-height:1.2;margin:0;color:#fff}
 .banner p{font-size:13px;color:rgba(255,255,255,.85);margin:8px auto 0;max-width:34em;line-height:1.45}
@@ -390,8 +371,8 @@ function reviewCard(r) {
 // Layout follows the 1b mockup with the annotated feedback applied: dark gray
 // header with a bigger logo, rating under the hero, buy button above the fold,
 // stat tiles, a Celebration Bell note, "Packed with Purpose" rail, "Our Fan
-// Club" reviews, "Encore" add-on rail, purple brand banner, and a compact item
-// list on a polka-dot background. Colors come from rockthetreatment.com/shop.
+// Club" reviews, purple brand banner, and a compact item list on a polka-dot
+// background. Colors come from rockthetreatment.com/shop.
 function generatePage(product) {
   const ui = product.mobileUi || {};
   const pr = pronounsFor(product);
@@ -429,8 +410,6 @@ function generatePage(product) {
 
   const allItems = product.categories.reduce((a, c) => a.concat(c.items), []);
   const featured = ((ui.featuredItems && ui.featuredItems.length) ? ui.featuredItems : allItems.slice(0, 6)).filter(f => f && f.name);
-  const addOnNames = ui.addOns || DEFAULT_ADD_ONS;
-  const addOns = addOnNames.map(n => upsellProducts.find(u => u.name === n)).filter(u => u && assetExists(img(u.image)));
   const bell = upsellProducts.find(u => u.name === 'Celebration Gift (Free)');
   const bellUrl = ui.celebrationUrl || `${wwwBase}/bell/`;
   const bellImg = bell && assetExists(img(bell.image)) ? img(bell.image) : '';
@@ -479,14 +458,6 @@ ${reviews.map(reviewCard).join('\n')}
         </div>
         <a class="more" href="${wwwBase}/${product.slug}/#reviews">See more reviews</a>
       </section>` : '';
-
-  const encoreHtml = addOns.length ? `      <div class="encore">
-        <h2>Encore! Include the perfect final note.</h2>
-        <p class="sub">Popular add-ons that pair with this package.</p>
-        <div class="rail" aria-label="Add-on items, swipe to see more">
-${addOns.map(u => `          <a class="addon" href="${wwwBase}${u.url}" data-track="addon_click">${picture(img(u.image), { alt: u.name })}<span>${escHtml(u.name)}</span></a>`).join('\n')}
-        </div>
-      </div>` : '';
 
   const categoriesHtml = product.categories.map(cat => `    <div class="cat-h"><i></i><h2>${escHtml(cat.name)}</h2></div>
     <ul class="items">
@@ -557,7 +528,6 @@ ${stats}
 ${bellHtml}
 ${packedHtml}
 ${fanHtml}
-${encoreHtml}
   </section>
 
   <div class="banner"><h2>${escHtml(bannerTitle)}</h2><p>${escHtml(bannerCopy)}</p></div>
