@@ -95,7 +95,6 @@ desktop site.
 | Celebration Bell note | Sold separately, links to `mobileUi.celebrationUrl` or `/bell/` |
 | Packed with Purpose (side scroll) | `mobileUi.featuredItems`, falling back to the first six items |
 | Our Fan Club (side scroll) | `reviews[]`, `ratingBreakdown` for the five-star percentage, "See more reviews" to the live page |
-| Encore! (side scroll add-ons) | `upsellProducts` filtered by `mobileUi.addOns` (default: blanket, Worry Stone, Anti-Nausea Wristband, tote, RTT wristband, Knit Beanie, Warmies, Warmies + Stone) |
 | Purple banner | `mobileUi.bannerTitle` (default "Nurturing Strength. Uplifting Spirits.") plus `supportingHeadline` or `shortDesc` |
 | Item list (polka-dot background) | `categories[].items[]` (name + `desc`) with images from `itemImages`; a placeholder tile is used when no image exists |
 | FAQs | `faqs` / `radiationFaqs` plus shared shipping FAQs |
@@ -111,7 +110,7 @@ to Cart button has scrolled out of view; set
 2026-09-10: prices, review counts, star breakdowns, and the "what's included"
 lists (with short descriptions taken from the live copy) match the store as of
 that date. Re-check before each launch; the live product pages are the source
-of truth. Item and add-on images are self-hosted copies of the store's
+of truth. Item images are self-hosted copies of the store's
 uploads (the store's image sitemaps at `/product-sitemap.xml` and
 `/post-sitemap.xml` are the quickest way to find a file by name); an item
 with no entry in `itemImages` renders as a placeholder tile.
@@ -215,7 +214,6 @@ Flat parameters, no `ecommerce` object.
 | `product_gallery_view` | a gallery image is shown (thumbnail, swipe, arrow key) | `image_index` (1-based) |
 | `rating_click` | the rating under the hero is clicked | `href` |
 | `celebration_bell` | the Celebration Bell link is clicked | `href` |
-| `addon_click` | an "Encore" add-on is clicked | `href` |
 | `faq_open` | an FAQ row is expanded | `question` |
 
 ### Connecting this to the store on www
@@ -247,6 +245,31 @@ carry across — but do list them anyway: Consent Mode's `url_passthrough` uses
 that list to decide which links may carry the `gclid` in the URL, which is how a
 Google Ads click stays attributable across the `m.` -> `www.` hop for a visitor
 who declined cookies.
+
+### Campaign parameters are forwarded to the store
+
+Links into the store are static absolute URLs, so a `gclid` or `utm_*`
+that arrived on a landing page would not reach the store on its own — and for a
+visitor who declined cookies there is no `_gcl_*` cookie carrying the click
+either. Without this, WooCommerce's order attribution can record a paid order as
+a referral from `m.rockthetreatment.com` rather than the campaign that paid for it.
+
+On load, the page copies an allowlisted set of parameters from its own URL onto
+every outbound link to the store:
+
+`gclid`, `gbraid`, `wbraid`, `msclkid`, `fbclid`, and `utm_source`,
+`utm_medium`, `utm_campaign`, `utm_term`, `utm_content`, `utm_id`.
+
+Deliberately an allowlist rather than blanket forwarding: only these names
+travel, so nothing else on the query string is propagated. Existing parameters
+(`add-to-cart`, `quantity`) are never overwritten, values over 512 characters
+are dropped, and `URL`/`URLSearchParams` do the encoding. Where either API is
+missing the links stay exactly as generated.
+
+This covers every outbound store link, not just the cart buttons — the
+Celebration Bell link, "See more reviews", and the header and footer links all
+lead into the store, and a buyer entering through any of them is on the same
+conversion path and would otherwise arrive unattributed.
 
 ## Consent Mode v2
 
