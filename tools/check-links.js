@@ -16,6 +16,9 @@ for (const page of pages) {
   const html = fs.readFileSync(path.join(pub, page), 'utf8');
   const refs = new Set();
   for (const m of html.matchAll(/(?:src|srcset|href)="([^"]+)"/g)) refs.add(m[1]);
+  // Inline-CSS backgrounds (the confetti dot layers) are referenced by url()
+  // rather than an attribute, so they would otherwise go unchecked.
+  for (const m of html.matchAll(/url\((['"]?)([^'")]+)\1\)/g)) refs.add(m[2]);
   for (const ref of refs) {
     if (/^(https?:|data:|mailto:|tel:|#)/.test(ref)) continue;
     const rel = ref.replace(/^\.\//, '').replace(/^\//, '').replace(/[?#].*$/, '');
