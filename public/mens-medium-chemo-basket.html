@@ -178,7 +178,56 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
 }
 @keyframes dot-scroll-a{from{transform:translate3d(0,7%,0)}to{transform:translate3d(0,-8%,0)}}
 @keyframes dot-scroll-b{from{transform:translate3d(-2%,15%,0)}to{transform:translate3d(2%,-17%,0)}}
-.inside{padding:18px 20px 8px;background-color:#fff;background-image:radial-gradient(rgba(255,99,25,.10) 2px,transparent 2.5px),radial-gradient(rgba(129,215,66,.12) 2px,transparent 2.5px),radial-gradient(rgba(6,147,227,.08) 2px,transparent 2.5px);background-size:34px 34px,34px 34px,34px 34px;background-position:0 0,17px 17px,8px 25px}
+/* The polka dots used to be three background-image layers painted straight onto
+   this section, which is cheap but immovable — background-position cannot be
+   animated without repainting. They are now three composited layers instead, so
+   the only thing that changes on scroll is a transform.
+   view-timeline-name is declared here, not view() on the layers: the layers sit
+   inside this overflow:hidden parent, so view() would resolve against that clip
+   and never progress. Naming the timeline on the section tracks the section's
+   own travel through the page scroller. Inert where unsupported. */
+.inside{position:relative;isolation:isolate;overflow:hidden;padding:18px 20px 8px;background-color:#fff;view-timeline-name:--rtt-inside;view-timeline-axis:block}
+.inside > *:not(.polka-field){position:relative;z-index:1}
+.polka-field{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+/* Inset well past the edges so a layer can travel without exposing a seam. */
+.polka-layer{position:absolute;inset:-32% -22%;background-repeat:repeat;will-change:transform}
+/* Dot size and spacing carry the depth as much as the motion does: the near
+   layer is large, sparse and travels most; the far layer is small, dense and
+   barely moves. Same three brand colors the flat pattern used. */
+.polka-a{background-image:radial-gradient(rgba(255,99,25,.13) 3px,transparent 3.5px);background-size:46px 46px}
+.polka-b{background-image:radial-gradient(rgba(129,215,66,.12) 2.2px,transparent 2.7px);background-size:34px 34px;background-position:17px 17px}
+.polka-c{background-image:radial-gradient(rgba(6,147,227,.09) 1.5px,transparent 2px);background-size:24px 24px;background-position:8px 13px}
+
+/* Scroll-driven parallax (Chrome 115+, Safari 26+). These run off the main
+   thread, so the field tracks the scroll at 60fps while the list is moving —
+   which a JS scroll listener cannot promise — and costs nothing while it is
+   still. animation-name is declared ONLY inside @supports: set outside it, a
+   browser without scroll timelines would fall back to the document timeline and
+   play the whole thing once on load. Anything older keeps the dots static,
+   which is exactly the flat pattern this replaced. */
+@supports (animation-timeline:view()){
+@media(prefers-reduced-motion:no-preference){
+.polka-field,.polka-layer{animation-timeline:--rtt-inside;animation-range:cover 0% cover 100%;
+  animation-iteration-count:1;animation-direction:normal;animation-fill-mode:both;
+  animation-timing-function:linear}
+.polka-field{animation-name:polka-bloom}
+.polka-a{animation-name:polka-near}
+.polka-b{animation-name:polka-mid}
+.polka-c{animation-name:polka-far}
+}
+}
+/* The field blooms in over the first slice of the section's travel and holds,
+   so the dots arrive with the list rather than being there the whole way. */
+@keyframes polka-bloom{from{opacity:0}14%{opacity:1}to{opacity:1}}
+/* Near layer outruns the page (translates up), far layer lags and counter-moves
+   (translates down) with a slight settle in scale. That opposition is what
+   reads as depth — two layers drifting the same way just reads as sliding. */
+@keyframes polka-near{from{transform:translate3d(0,9%,0)}to{transform:translate3d(0,-11%,0)}}
+@keyframes polka-mid{from{transform:translate3d(-1.5%,4%,0)}to{transform:translate3d(1.5%,-5%,0)}}
+/* The far layer also settles in scale and turns a degree and a half, so the
+   backdrop drifts rather than tracking straight. Rotation stays tiny and the
+   layer is inset well past the edges, so the repeat never shows a corner. */
+@keyframes polka-far{from{transform:translate3d(0,-5%,0) scale(1.06) rotate(-1.5deg)}to{transform:translate3d(0,6%,0) scale(1) rotate(1.5deg)}}
 .cat-h{display:flex;align-items:center;gap:8px;margin:0 0 4px}
 .items + .cat-h{margin-top:14px}
 .cat-h i{width:4px;height:18px;background:var(--orange);border-radius:2px;flex:0 0 auto}
@@ -306,6 +355,7 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
   <div class="banner"><div class="dot-field" aria-hidden="true"><div class="dot-layer dot-layer-a"></div><div class="dot-layer dot-layer-b"></div></div><h2>Nurturing Strength. Uplifting Spirits.</h2><p>The medium men's chemo care package includes all essentials that ease the side effects of chemotherapy for him.</p></div>
 
   <section class="inside" aria-label="Everything inside">
+    <div class="polka-field" aria-hidden="true"><div class="polka-layer polka-a"></div><div class="polka-layer polka-b"></div><div class="polka-layer polka-c"></div></div>
     <div class="cat-h"><i></i><h2>For Dry Mouth, Lip &amp; Skin</h2></div>
     <ul class="items">
       <li><picture><source type="image/avif" srcset="/assets/uploads/2019/05/lindi-face-serum.avif"><source type="image/webp" srcset="/assets/uploads/2019/05/lindi-face-serum.webp"><img src="/assets/uploads/2019/05/lindi-face-serum.jpg" alt="" width="46" height="46" loading="lazy" decoding="async"></picture><div><div class="name">Lindi Skin Face Serum</div><div class="desc">Renew and replenish skin with this light, non-greasy and fast absorbing serum aimed at reducing redness, irritation…</div></div></li>

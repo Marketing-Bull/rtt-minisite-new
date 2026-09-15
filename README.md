@@ -96,7 +96,7 @@ desktop site.
 | Packed with Purpose (side scroll) | `mobileUi.featuredItems`, falling back to the first six items |
 | Our Fan Club (side scroll) | `reviews[]`, `ratingBreakdown` for the five-star percentage, "See more reviews" to the live page |
 | Purple banner | `mobileUi.bannerTitle` (default "Nurturing Strength. Uplifting Spirits.") plus `supportingHeadline` or `shortDesc`, over a decorative confetti dot field |
-| Item list (polka-dot background) | `categories[].items[]` (name + `desc`) with images from `itemImages`; a placeholder tile is used when no image exists |
+| Item list (parallax polka-dot background) | `categories[].items[]` (name + `desc`) with images from `itemImages`; a placeholder tile is used when no image exists |
 | FAQs | `faqs` / `radiationFaqs` plus shared shipping FAQs |
 
 Pronouns come from `mobileUi.pronoun` (`she`, `he`, or `they`), inferred from
@@ -164,6 +164,17 @@ and re-running `npm run optimize`. Be aware the gain is bounded — the page is
 capped at 480px wide and the gallery again at 42svh, so the light tier already
 meets device pixels on most phones; the sources are 1500x1500, so `-hq` tops out
 there too.
+
+The item list's polka dots are three composited layers rather than a painted
+background, each on its own scroll-driven `view-timeline` named on the section.
+The near layer is large and sparse and outruns the page; the far layer is small
+and dense and counter-moves with a slight settle in scale and rotation, which is
+what reads as depth. The field blooms in over the first slice of the section's
+travel. `animation-name` is declared only inside the `@supports` block on
+purpose: set outside it, a browser without scroll timelines would fall back to
+the document timeline and play the whole thing once on load. Without support, or
+under `prefers-reduced-motion`, the layers render static — the flat pattern this
+replaced. Measured at 0ms of main-thread long-task time across a 60-frame scroll.
 
 The confetti dots behind the purple banner are two tiled layers of
 `2023/10/Dots-1.png`. They drift on a timer everywhere, and on Chrome 115+ /
