@@ -37,8 +37,15 @@ button{font-family:inherit}
 .header .hlink.right{justify-self:end}
 .header .hlink svg{width:24px;height:24px}
 
-.gallery-main{width:100%;display:block;aspect-ratio:1/1;max-height:42vh;object-fit:cover;background:#f4f4f4}
-@media(max-height:700px){.gallery-main{max-height:34vh}.thumb{width:44px;height:44px}.buy{padding-top:4px}}
+/* aspect-ratio reserves the space before the image decodes, but max-height then
+   flattens the box below square — 391x354 on a iPhone 15 Pro Max — while every
+   product shot we have is a square 1500x1500. object-fit:cover resolved that
+   mismatch by slicing the top and bottom off the box in every photo, so this is
+   contain: the cap still keeps the price and Add to Cart above the fold, and
+   the product is shown whole inside it. svh, not vh, because the height the cap
+   has to hold is the one with the browser chrome showing. */
+.gallery-main{width:100%;display:block;aspect-ratio:1/1;max-height:42vh;max-height:42svh;object-fit:contain;background:#fff}
+@media(max-height:700px){.gallery-main{max-height:34vh;max-height:34svh}.thumb{width:44px;height:44px}.buy{padding-top:4px}}
 .rating-row{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#333;padding:8px 20px 0}
 .rating-row a{color:inherit;display:inline-flex;align-items:center;gap:8px}
 .stars{color:var(--star)}
@@ -72,6 +79,39 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
 .bell .t{font-size:13.5px;font-weight:800;color:#2f5f21;line-height:1.25}
 .bell .s{font-size:12px;color:#4a6b3f;margin-top:2px;line-height:1.35}
 .bell a{display:inline-block;margin-top:4px;font-size:12.5px;font-weight:800;color:var(--green-dark);text-decoration:underline;text-underline-offset:2px}
+.bell .s strong{color:#2f5f21}
+.bell .s em{font-style:normal;color:var(--soft)}
+/* Celebration Bell dialog. The callout's link is a real outbound href that
+   works with no JS; the script upgrades it to open this instead, so the buyer
+   sees what the bell is — and that it ships on its own — before leaving. */
+.bell-modal{width:min(420px,calc(100vw - 32px));max-height:calc(100dvh - 40px);padding:0;border:0;border-radius:18px;background:#fff;color:var(--text);box-shadow:0 24px 60px -16px rgba(0,0,0,.45);overflow:auto;overscroll-behavior:contain}
+.bell-modal::backdrop{background:rgba(26,26,26,.55)}
+/* A wheel or drag over the backdrop otherwise scrolls the page behind. */
+.bell-open{overflow:hidden}
+.bell-figure{margin:0;padding:26px 24px 0}
+.bell-figure img{width:200px;height:200px;max-width:100%;object-fit:contain;display:block;margin:0 auto}
+.bell-body{padding:2px 24px 24px;text-align:center}
+.bell-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--green-dark);margin:12px 0 0}
+.bell-modal h2{font-weight:800;font-size:26px;line-height:1.1;margin:6px 0 0;color:var(--text)}
+.bell-tag{display:inline-block;margin:10px 0 0;padding:4px 11px;border-radius:999px;border:1px solid var(--border);font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--soft)}
+.bell-copy{font-size:13.5px;line-height:1.5;color:var(--muted);margin:14px auto 0;max-width:34ch}
+.bell-modal .atc{margin-top:18px}
+.bell-dismiss{display:block;width:100%;margin-top:8px;padding:11px;border:0;background:none;font-size:13px;font-weight:700;color:var(--soft);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.bell-close{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:19px;line-height:1;cursor:pointer}
+/* Short screens (landscape phones): at 200px the bell pushes the CTA past the
+   dialog's own scroll, so trade picture size for a reachable button. */
+@media(max-height:620px){
+.bell-figure{padding:18px 24px 0}
+.bell-figure img{width:96px;height:96px}
+.bell-eyebrow{margin-top:8px}
+.bell-modal h2{font-size:22px}
+.bell-copy{margin-top:10px}
+.bell-modal .atc{margin-top:12px}
+}
+@media(prefers-reduced-motion:no-preference){
+.bell-modal[open]{animation:bell-in .22s ease-out}
+@keyframes bell-in{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+}
 .rail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 20px 8px;margin:0 -20px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .rail::-webkit-scrollbar{display:none}
 .feat{flex:0 0 150px;scroll-snap-align:start;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff}
@@ -89,9 +129,54 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
 .quote p{font-size:13px;line-height:1.45;color:#333;margin:5px 0 0;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 .quote .who{font-size:11.5px;color:var(--faint);margin-top:7px;font-weight:700}
 .fan .more{display:inline-flex;align-items:center;justify-content:center;margin-top:12px;height:38px;padding:0 16px;border-radius:8px;background:var(--orange);color:#fff;font-size:13px;font-weight:800}
-.banner{background:var(--purple);color:#fff;text-align:center;padding:24px 20px;margin-top:22px}
+/* view-timeline-name goes here, not view() on the layers: the layers sit inside
+   this overflow:hidden parent, so view() would resolve against that clip and
+   never progress. Naming the timeline on the section tracks the section's own
+   travel through the page scroller instead. Inert where unsupported. */
+.banner{position:relative;isolation:isolate;overflow:hidden;background:var(--purple);color:#fff;text-align:center;padding:24px 20px;margin-top:22px;view-timeline-name:--rtt-banner;view-timeline-axis:block}
+.banner > *:not(.dot-field){position:relative;z-index:1}
 .banner h2{font-weight:800;font-size:22px;line-height:1.2;margin:0;color:#fff}
 .banner p{font-size:13px;color:rgba(255,255,255,.85);margin:8px auto 0;max-width:34em;line-height:1.45}
+
+/* Confetti dots, the same asset the www site uses. Two layers at different
+   scales and speeds so the field reads as depth rather than a flat pattern.
+   Purely decorative: aria-hidden, pointer-events off, and behind the type.
+   The mask clears a soft hole through the middle so the dots frame the copy
+   from the edges instead of running underneath it. */
+.dot-field{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  -webkit-mask-image:radial-gradient(118% 82% at 50% 50%,transparent 24%,#000 80%);
+  mask-image:radial-gradient(118% 82% at 50% 50%,transparent 24%,#000 80%)}
+.dot-layer{position:absolute;inset:-26% -16%;background-repeat:repeat;
+  background-image:url(/assets/uploads/2023/10/Dots-1.webp);
+  background-image:image-set(url(/assets/uploads/2023/10/Dots-1.avif) type("image/avif"),url(/assets/uploads/2023/10/Dots-1.webp) type("image/webp"));
+  will-change:transform}
+.dot-layer-a{background-size:340px auto;opacity:.75}
+.dot-layer-b{background-size:520px auto;background-position:38% 12%;opacity:.4}
+
+/* Everywhere: a slow ambient drift. Transform only, so it composites on the
+   GPU and never touches layout. */
+@media(prefers-reduced-motion:no-preference){
+.dot-layer-a{animation:dot-drift-a 26s ease-in-out infinite alternate}
+.dot-layer-b{animation:dot-drift-b 38s ease-in-out infinite alternate}
+}
+@keyframes dot-drift-a{from{transform:translate3d(0,0,0)}to{transform:translate3d(-3%,-5%,0)}}
+@keyframes dot-drift-b{from{transform:translate3d(0,0,0)}to{transform:translate3d(4%,6%,0)}}
+
+/* Newer phones (Chrome 115+, Safari 26+): hand the same two layers to the
+   scroll instead of a timer. Scroll-driven animations run off the main thread,
+   so this parallaxes at 60fps while the page is scrolling — which a JS scroll
+   listener cannot promise. Anything older keeps the drift above. */
+@supports (animation-timeline:view()){
+@media(prefers-reduced-motion:no-preference){
+.dot-layer{animation-timeline:--rtt-banner;animation-range:cover 0% cover 100%;
+  animation-iteration-count:1;animation-direction:normal;animation-fill-mode:both;
+  animation-timing-function:linear}
+.dot-layer-a{animation-name:dot-scroll-a}
+.dot-layer-b{animation-name:dot-scroll-b}
+}
+}
+@keyframes dot-scroll-a{from{transform:translate3d(0,7%,0)}to{transform:translate3d(0,-8%,0)}}
+@keyframes dot-scroll-b{from{transform:translate3d(-2%,15%,0)}to{transform:translate3d(2%,-17%,0)}}
 .inside{padding:18px 20px 8px;background-color:#fff;background-image:radial-gradient(rgba(255,99,25,.10) 2px,transparent 2.5px),radial-gradient(rgba(129,215,66,.12) 2px,transparent 2.5px),radial-gradient(rgba(6,147,227,.08) 2px,transparent 2.5px);background-size:34px 34px,34px 34px,34px 34px;background-position:0 0,17px 17px,8px 25px}
 .cat-h{display:flex;align-items:center;gap:8px;margin:0 0 4px}
 .items + .cat-h{margin-top:14px}
@@ -170,8 +255,21 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
         <div class="stat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7.5h10v9H3z"/><path d="M13 10.5h4l4 3.5v2.5h-8z"/><circle cx="7" cy="18.5" r="1.6"/><circle cx="17" cy="18.5" r="1.6"/></svg><span>ships in 1–2 days</span></div>
       </div>
       <div class="bell">
-        <div><div class="t">Supporting Treatment. Celebrating Triumphs.</div><div class="s">When treatment ends, mark the moment with the Celebration Bell, sold separately.</div><a href="https://www.rockthetreatment.com/bell/" data-track="celebration_bell">See the Celebration Bell →</a></div>
+        <picture><source type="image/avif" srcset="/assets/uploads/2023/06/Copy-of-free-bell-w-box-1-1.avif"><source type="image/webp" srcset="/assets/uploads/2023/06/Copy-of-free-bell-w-box-1-1.webp"><img src="/assets/uploads/2023/06/Copy-of-free-bell-w-box-1-1.jpg" alt="Celebration Bell" loading="lazy" decoding="async"></picture>
+        <div><div class="t">Free gift included</div><div class="s">Every purchase comes with a <strong>free</strong> end-of-treatment Celebration Bell. <em>Ordered separately.</em></div><a class="js-bell-open" href="https://www.rockthetreatment.com/bell/" data-track="celebration_bell">See the Celebration Bell →</a></div>
       </div>
+      <dialog class="bell-modal" id="bellModal" aria-labelledby="bellModalTitle">
+        <button class="bell-close" type="button" id="bellClose" aria-label="Close">&times;</button>
+        <figure class="bell-figure"><picture><source type="image/avif" srcset="/assets/uploads/2023/06/Copy-of-free-bell-w-box-1-1.avif"><source type="image/webp" srcset="/assets/uploads/2023/06/Copy-of-free-bell-w-box-1-1.webp"><img src="/assets/uploads/2023/06/Copy-of-free-bell-w-box-1-1.jpg" alt="The Celebration Bell" loading="lazy" decoding="async"></picture></figure>
+        <div class="bell-body">
+          <p class="bell-eyebrow">Free with every purchase</p>
+          <h2 id="bellModalTitle">The Celebration Bell</h2>
+          <p class="bell-tag">Ordered separately</p>
+          <p class="bell-copy">Rung on the last day of treatment — a small, loud moment people remember for years. It's free with any care package, and placed as its own order rather than packed in this box, so it arrives for the day it's actually meant for.</p>
+          <a class="atc" href="https://www.rockthetreatment.com/bell/" data-track="celebration_bell_cta">See the Celebration Bell</a>
+          <button class="bell-dismiss" type="button" id="bellDismiss">Not right now</button>
+        </div>
+      </dialog>
       <h2>Packed with Purpose</h2>
       <div class="rail" aria-label="A few of the comforts inside, swipe to see more">
         <div class="feat"><picture><source type="image/avif" srcset="/assets/uploads/2019/05/lindi-face-serum.avif"><source type="image/webp" srcset="/assets/uploads/2019/05/lindi-face-serum.webp"><img src="/assets/uploads/2019/05/lindi-face-serum.jpg" alt="" loading="lazy" decoding="async"></picture><div class="name">Lindi Skin Face Serum</div><div class="desc">Renew and replenish skin with this light, non-greasy and fast absorbing serum aimed at reducing redness, irritation…</div></div>
@@ -205,7 +303,7 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
       </section>
   </section>
 
-  <div class="banner"><h2>Nurturing Strength. Uplifting Spirits.</h2><p>The medium men's chemo care package includes all essentials that ease the side effects of chemotherapy for him.</p></div>
+  <div class="banner"><div class="dot-field" aria-hidden="true"><div class="dot-layer dot-layer-a"></div><div class="dot-layer dot-layer-b"></div></div><h2>Nurturing Strength. Uplifting Spirits.</h2><p>The medium men's chemo care package includes all essentials that ease the side effects of chemotherapy for him.</p></div>
 
   <section class="inside" aria-label="Everything inside">
     <div class="cat-h"><i></i><h2>For Dry Mouth, Lip &amp; Skin</h2></div>
@@ -273,7 +371,7 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
     </div>
     <div class="faq" data-faq>
       <button type="button" aria-expanded="false" aria-controls="faq-8"><span>Is the Celebration Bell included?</span><span class="chev" aria-hidden="true">▾</span></button>
-      <div class="panel" id="faq-8" data-faq-panel><p>The Celebration Bell is a separate end-of-treatment gift and must be ordered separately.</p></div>
+      <div class="panel" id="faq-8" data-faq-panel><p>Yes — every purchase includes a free end-of-treatment Celebration Bell. It is placed as its own separate order rather than packed in this box, so it arrives for the day it is meant for.</p></div>
     </div>
     <div class="more"><a href="https://www.rockthetreatment.com/faqs/">Browse more FAQs →</a></div>
   </section>
@@ -402,6 +500,28 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
     if (e.key === 'ArrowLeft') { e.preventDefault(); show(current - 1); }
     if (e.key === 'ArrowRight') { e.preventDefault(); show(current + 1); }
   });
+
+  // Celebration Bell dialog. Progressive enhancement: with no JS, or no
+  // <dialog> support, the callout's link just navigates to the bell page.
+  var bellModal = document.getElementById('bellModal');
+  var bellOpener = document.querySelector('.js-bell-open');
+  if (bellModal && bellOpener && typeof bellModal.showModal === 'function') {
+    var closeBell = function(){ if (bellModal.open) bellModal.close(); };
+    // Lock the page behind: a wheel or drag over the backdrop scrolls it
+    // otherwise. The close event also fires for Escape, so this always unwinds.
+    bellModal.addEventListener('close', function(){ document.body.classList.remove('bell-open'); });
+    // No track() here: the generic [data-track] handler below already fires
+    // celebration_bell for this click, dialog or not.
+    bellOpener.addEventListener('click', function(e){
+      e.preventDefault();
+      document.body.classList.add('bell-open');
+      bellModal.showModal();
+    });
+    document.getElementById('bellClose').addEventListener('click', closeBell);
+    document.getElementById('bellDismiss').addEventListener('click', closeBell);
+    // A backdrop click lands on the dialog element itself.
+    bellModal.addEventListener('click', function(e){ if (e.target === bellModal) closeBell(); });
+  }
 
   var cartBtns = Array.prototype.slice.call(document.querySelectorAll('.js-cart-btn'));
   cartBtns.forEach(function(b){ b.addEventListener('click', function(){ trackEcommerce('add_to_cart', 1, {cta_location: b.getAttribute('data-cta-location') || 'inline'}); }); });

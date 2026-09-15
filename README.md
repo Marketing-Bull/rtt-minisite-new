@@ -92,10 +92,10 @@ desktop site.
 | Title + overview chips | `title`, `categories[].name` (leading "For " stripped) |
 | Price and Add to Cart (above the fold) | `mobileUi.displayPrice` or `price`; `id` → `/cart/?add-to-cart=<id>&quantity=1` (quantity is changed in the store cart) |
 | Stat tiles | item count from `categories`, `rating`, ship time |
-| Celebration Bell note | Sold separately, links to `mobileUi.celebrationUrl` or `/bell/` |
+| Celebration Bell note | Free with any purchase, ordered separately; the link opens a dialog explaining the bell, and falls back to `mobileUi.celebrationUrl` or `/bell/` without JS |
 | Packed with Purpose (side scroll) | `mobileUi.featuredItems`, falling back to the first six items |
 | Our Fan Club (side scroll) | `reviews[]`, `ratingBreakdown` for the five-star percentage, "See more reviews" to the live page |
-| Purple banner | `mobileUi.bannerTitle` (default "Nurturing Strength. Uplifting Spirits.") plus `supportingHeadline` or `shortDesc` |
+| Purple banner | `mobileUi.bannerTitle` (default "Nurturing Strength. Uplifting Spirits.") plus `supportingHeadline` or `shortDesc`, over a decorative confetti dot field |
 | Item list (polka-dot background) | `categories[].items[]` (name + `desc`) with images from `itemImages`; a placeholder tile is used when no image exists |
 | FAQs | `faqs` / `radiationFaqs` plus shared shipping FAQs |
 
@@ -127,8 +127,12 @@ front of shoppers, so they render only when a product's `mobileUi` sets:
 | `shipCutoffHourEt` (e.g. `14`) | Live countdown to that Eastern-time cutoff on weekdays, otherwise the static ship line |
 | `stockNote` (e.g. `"Only a few left"`) | Orange note in the sticky purchase bar |
 
-The Celebration Bell is not included with any package; it is a separate
-end-of-treatment gift, so the page links to it rather than promising it.
+Every purchase includes a free end-of-treatment Celebration Bell, but it is
+placed as its own order rather than packed in the box, so it arrives for the day
+it is meant for. Say both halves together wherever the bell is mentioned — the
+callout, the dialog and the FAQ answer all do. "Free" without the qualifier
+promises a box that will not contain it; "ordered separately" without "free"
+reads as an upsell.
 
 ## Product and review integrity
 
@@ -146,6 +150,18 @@ Images are self-hosted under `public/assets/uploads/` (only the files these
 pages reference) and served through `<picture>` with AVIF and WebP variants
 plus the original fallback. The generator only references variant files that
 exist, so a missing variant falls back to the original image.
+
+The 1200px variants `npm run optimize` writes are sized for the largest thing
+the layout ever shows. The page is capped at 480px wide and the gallery is
+capped again at 42svh, so the product image renders at roughly 1000-1300 device
+pixels even on a 3x phone — a second, sharper tier was measured and does not
+change what any tested device displays.
+
+The confetti dots behind the purple banner are two tiled layers of
+`2023/10/Dots-1.png`. They drift on a timer everywhere, and on Chrome 115+ /
+Safari 26+ they run off a scroll-driven `view-timeline` named on the banner
+instead, which animates off the main thread. Both are disabled under
+`prefers-reduced-motion`. `npm run check` covers the CSS `url()` references.
 
 ## Verification checklist
 
@@ -213,7 +229,8 @@ Flat parameters, no `ecommerce` object.
 | --- | --- | --- |
 | `product_gallery_view` | a gallery image is shown (thumbnail, swipe, arrow key) | `image_index` (1-based) |
 | `rating_click` | the rating under the hero is clicked | `href` |
-| `celebration_bell` | the Celebration Bell link is clicked | `href` |
+| `celebration_bell` | the Celebration Bell link is clicked (whether it opens the dialog or navigates) | `href` |
+| `celebration_bell_cta` | the button inside the Celebration Bell dialog is clicked | `href` |
 | `faq_open` | an FAQ row is expanded | `question` |
 
 ### Connecting this to the store on www
