@@ -81,32 +81,33 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
 .bell a{display:inline-block;margin-top:4px;font-size:12.5px;font-weight:800;color:var(--green-dark);text-decoration:underline;text-underline-offset:2px}
 .bell .s strong{color:#2f5f21}
 .bell .s em{font-style:normal;color:var(--soft)}
-/* Celebration Bell dialog. The callout's link is a real outbound href that
-   works with no JS; the script upgrades it to open this instead, so the buyer
-   sees what the bell is — and that it ships on its own — before leaving. */
-.bell-modal{width:min(420px,calc(100vw - 32px));max-height:calc(100dvh - 40px);padding:0;border:0;border-radius:18px;background:#fff;color:var(--text);box-shadow:0 24px 60px -16px rgba(0,0,0,.45);overflow:auto;overscroll-behavior:contain}
+/* Celebration Bell dialog, in the page's own design language: the topbar's
+   green gradient as a header band, the card radius used elsewhere, and the
+   orange .atc as the CTA. The callout's link is a real outbound href that works
+   with no JS; the script upgrades it to open this instead, so the buyer sees
+   what the bell is — and that it ships on its own — before leaving. */
+.bell-modal{width:min(400px,calc(100vw - 28px));max-height:calc(100dvh - 32px);padding:0;border:0;border-radius:14px;background:#fff;color:var(--text);box-shadow:0 24px 60px -16px rgba(0,0,0,.45);overflow:auto;overscroll-behavior:contain}
 .bell-modal::backdrop{background:rgba(26,26,26,.55)}
 /* A wheel or drag over the backdrop otherwise scrolls the page behind. */
 .bell-open{overflow:hidden}
-.bell-figure{margin:0;padding:26px 24px 0}
-.bell-figure img{width:200px;height:200px;max-width:100%;object-fit:contain;display:block;margin:0 auto}
-.bell-body{padding:2px 24px 24px;text-align:center}
-.bell-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--green-dark);margin:12px 0 0}
-.bell-modal h2{font-weight:800;font-size:26px;line-height:1.1;margin:6px 0 0;color:var(--text)}
-.bell-tag{display:inline-block;margin:10px 0 0;padding:4px 11px;border-radius:999px;border:1px solid var(--border);font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--soft)}
-.bell-copy{font-size:13.5px;line-height:1.5;color:var(--muted);margin:14px auto 0;max-width:34ch}
-.bell-modal .atc{margin-top:18px}
-.bell-dismiss{display:block;width:100%;margin-top:8px;padding:11px;border:0;background:none;font-size:13px;font-weight:700;color:var(--soft);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
-.bell-close{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:19px;line-height:1;cursor:pointer}
-/* Short screens (landscape phones): at 200px the bell pushes the CTA past the
-   dialog's own scroll, so trade picture size for a reachable button. */
+.bell-band{position:relative;margin:0;background:linear-gradient(90deg,var(--grad-a),var(--grad-b));color:#fff;text-align:center;padding:9px 44px;font-size:12.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 1px 1px rgba(0,0,0,.15)}
+.bell-figure{margin:0;padding:16px 24px 0;background:#fff}
+.bell-figure img{width:172px;height:172px;max-width:100%;object-fit:contain;display:block;margin:0 auto}
+.bell-body{padding:16px 20px 20px;text-align:center}
+.bell-modal h2{font-weight:800;font-size:24px;line-height:1.15;margin:0;color:var(--text)}
+.bell-tag{display:inline-block;margin:9px 0 0;padding:4px 10px;border-radius:999px;background:#f4f4f4;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--soft)}
+.bell-copy{font-size:13px;line-height:1.5;color:var(--muted);margin:12px auto 0;max-width:34ch}
+.bell-modal .atc{margin-top:16px}
+.bell-dismiss{display:block;width:100%;margin-top:6px;padding:10px;border:0;background:none;font-family:inherit;font-size:13px;font-weight:700;color:var(--soft);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.bell-close{position:absolute;top:50%;right:8px;transform:translateY(-50%);width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:0;background:rgba(255,255,255,.22);color:#fff;font-size:19px;line-height:1;cursor:pointer}
+/* Short screens (landscape phones): trade picture size for a reachable CTA. */
 @media(max-height:620px){
-.bell-figure{padding:18px 24px 0}
-.bell-figure img{width:96px;height:96px}
-.bell-eyebrow{margin-top:8px}
-.bell-modal h2{font-size:22px}
-.bell-copy{margin-top:10px}
-.bell-modal .atc{margin-top:12px}
+.bell-figure{padding:10px 24px 0}
+.bell-figure img{width:84px;height:84px}
+.bell-body{padding-top:12px}
+.bell-modal h2{font-size:20px}
+.bell-copy{margin-top:8px}
+.bell-modal .atc{margin-top:10px}
 }
 @media(prefers-reduced-motion:no-preference){
 .bell-modal[open]{animation:bell-in .22s ease-out}
@@ -251,18 +252,17 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
       <div class="buy-note"><span>🔒 Secure checkout</span><span class="r">Free gift note at checkout</span></div>
       <div class="stats">
         <div class="stat"><b>12</b><span>curated items</span></div>
-        <div class="stat"><b>5.0★</b><span>avg rating</span></div>
-        <div class="stat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7.5h10v9H3z"/><path d="M13 10.5h4l4 3.5v2.5h-8z"/><circle cx="7" cy="18.5" r="1.6"/><circle cx="17" cy="18.5" r="1.6"/></svg><span>ships in 1–2 days</span></div>
+        <div class="stat"><b>5.0★</b><span>124 reviews</span></div>
+        <div class="stat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7.5h10v9H3z"/><path d="M13 10.5h4l4 3.5v2.5h-8z"/><circle cx="7" cy="18.5" r="1.6"/><circle cx="17" cy="18.5" r="1.6"/></svg><span>ships quickly</span></div>
       </div>
       <div class="bell">
         <picture><source type="image/avif" srcset="/assets/uploads/2023/06/Copy-of-free-bell-w-box-1-1.avif"><source type="image/webp" srcset="/assets/uploads/2023/06/Copy-of-free-bell-w-box-1-1.webp"><img src="/assets/uploads/2023/06/Copy-of-free-bell-w-box-1-1.jpg" alt="Celebration Bell" loading="lazy" decoding="async"></picture>
         <div><div class="t">Free gift included</div><div class="s">Every purchase comes with a <strong>free</strong> end-of-treatment Celebration Bell. <em>Ordered separately.</em></div><a class="js-bell-open" href="https://www.rockthetreatment.com/bell/" data-track="celebration_bell">See the Celebration Bell →</a></div>
       </div>
       <dialog class="bell-modal" id="bellModal" aria-labelledby="bellModalTitle">
-        <button class="bell-close" type="button" id="bellClose" aria-label="Close">&times;</button>
+        <p class="bell-band">Free with every purchase<button class="bell-close" type="button" id="bellClose" aria-label="Close">&times;</button></p>
         <figure class="bell-figure"><picture><source type="image/avif" srcset="/assets/uploads/2023/06/Copy-of-free-bell-w-box-1-1.avif"><source type="image/webp" srcset="/assets/uploads/2023/06/Copy-of-free-bell-w-box-1-1.webp"><img src="/assets/uploads/2023/06/Copy-of-free-bell-w-box-1-1.jpg" alt="The Celebration Bell" loading="lazy" decoding="async"></picture></figure>
         <div class="bell-body">
-          <p class="bell-eyebrow">Free with every purchase</p>
           <h2 id="bellModalTitle">The Celebration Bell</h2>
           <p class="bell-tag">Ordered separately</p>
           <p class="bell-copy">Rung on the last day of treatment — a small, loud moment people remember for years. It's free with any care package, and placed as its own order rather than packed in this box, so it arrives for the day it's actually meant for.</p>
@@ -402,7 +402,7 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
   var PRODUCT_ID = 10338;
   var PRODUCT_NAME = "Small Women's Chemo Care Package";
   var UNIT_PRICE = 74.99;
-  var GALLERY = [{"a":"/assets/uploads/2019/05/Womens-Chemo-Small-Care-Package-Main.avif","w":"/assets/uploads/2019/05/Womens-Chemo-Small-Care-Package-Main.webp","f":"/assets/uploads/2019/05/Womens-Chemo-Small-Care-Package-Main.jpg"},{"a":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_dry-mouth.avif","w":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_dry-mouth.webp","f":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_dry-mouth.jpg"},{"a":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_nausea.avif","w":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_nausea.webp","f":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_nausea.jpg"},{"a":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_engaging-mind.avif","w":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_engaging-mind.webp","f":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_engaging-mind.jpg"}];
+  var GALLERY = [{"a":"/assets/uploads/2019/05/Womens-Chemo-Small-Care-Package-Main.avif","w":"/assets/uploads/2019/05/Womens-Chemo-Small-Care-Package-Main.webp","f":"/assets/uploads/2019/05/Womens-Chemo-Small-Care-Package-Main.jpg","ha":"/assets/uploads/2019/05/Womens-Chemo-Small-Care-Package-Main-hq.avif","hw":"/assets/uploads/2019/05/Womens-Chemo-Small-Care-Package-Main-hq.webp","hf":"/assets/uploads/2019/05/Womens-Chemo-Small-Care-Package-Main.jpg"},{"a":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_dry-mouth.avif","w":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_dry-mouth.webp","f":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_dry-mouth.jpg","ha":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_dry-mouth-hq.avif","hw":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_dry-mouth-hq.webp","hf":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_dry-mouth.jpg"},{"a":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_nausea.avif","w":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_nausea.webp","f":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_nausea.jpg","ha":"","hw":"","hf":""},{"a":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_engaging-mind.avif","w":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_engaging-mind.webp","f":"/assets/uploads/2019/05/Womens_Chemo_Small_Product-Tiles_engaging-mind.jpg","ha":"","hw":"","hf":""}];
   var STORE_BASE = "https://www.rockthetreatment.com";
   var CURRENCY = 'USD';
   var ITEM_CATEGORY = "Chemo Care Packages";
@@ -476,8 +476,10 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
   var stage = document.getElementById('galleryStage');
   var thumbs = Array.prototype.slice.call(document.querySelectorAll('#galleryThumbs .thumb'));
   var current = 0;
-  function show(i){
-    if (!GALLERY.length) return;
+  // Paint a slide without the analytics event, so the after-load quality
+  // upgrade can re-apply the current slide without logging a phantom view.
+  function apply(i){
+    if (!GALLERY.length) return false;
     if (i < 0) i = GALLERY.length - 1;
     if (i >= GALLERY.length) i = 0;
     current = i;
@@ -486,8 +488,36 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
     if (mainWebp) mainWebp.srcset = g.w || '';
     mainImg.src = g.f;
     thumbs.forEach(function(t, k){ t.setAttribute('aria-current', k === i ? 'true' : 'false'); });
-    track('product_gallery_view', {image_index: i + 1});
+    return true;
   }
+  function show(i){
+    if (!apply(i)) return;
+    track('product_gallery_view', {image_index: current + 1});
+  }
+
+  // Progressive image quality. The markup ships the light tier so the gallery
+  // paints fast — it is what the LCP preload points at — then, once the page
+  // has settled, the first two stills are swapped up to their sharper variant.
+  // Assigning srcset/src leaves the decoded frame on screen until its
+  // replacement is ready, so the upgrade is invisible apart from the detail.
+  function upgradeImageQuality(){
+    var upgraded = false;
+    GALLERY.forEach(function(g){
+      if (!g.hf) return;
+      g.a = g.ha; g.w = g.hw; g.f = g.hf;
+      upgraded = true;
+    });
+    if (upgraded) apply(current);
+  }
+  function queueImageUpgrade(){
+    // Idle time after load, so the heavier tier never competes with anything
+    // the buyer is actually waiting on. The timeout keeps it honest.
+    if (window.requestIdleCallback) window.requestIdleCallback(upgradeImageQuality, {timeout:3000});
+    else window.setTimeout(upgradeImageQuality, 400);
+  }
+  if (document.readyState === 'complete') queueImageUpgrade();
+  else window.addEventListener('load', queueImageUpgrade);
+
   thumbs.forEach(function(t, i){ t.addEventListener('click', function(){ show(i); }); });
   var startX = 0, dx = 0, swiping = false;
   stage.addEventListener('touchstart', function(e){ startX = e.touches[0].clientX; dx = 0; swiping = true; }, {passive:true});
