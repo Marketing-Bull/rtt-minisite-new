@@ -91,7 +91,7 @@ desktop site.
 | Gallery, rating row, thumbnails | `heroImage`, then `mobileUi.animationImage` (box-opening GIF) if set, then the `galleryImages` package tiles; `rating`, `reviewCount` |
 | Title + overview chips | `title`, `categories[].name` (leading "For " stripped) |
 | Price and Add to Cart (above the fold) | `mobileUi.displayPrice` or `price`; `id` → `/cart/?add-to-cart=<id>&quantity=1` (quantity is changed in the store cart) |
-| Stat tiles | item count from `categories`, `rating`, ship time |
+| Stat tiles | item count from `categories`, then `rating` with `reviewCount`, then ship time |
 | Celebration Bell note | Free with any purchase, ordered separately; the link opens a dialog explaining the bell, and falls back to `mobileUi.celebrationUrl` or `/bell/` without JS |
 | Packed with Purpose (side scroll) | `mobileUi.featuredItems`, falling back to the first six items |
 | Our Fan Club (side scroll) | `reviews[]`, `ratingBreakdown` for the five-star percentage, "See more reviews" to the live page |
@@ -151,11 +151,19 @@ pages reference) and served through `<picture>` with AVIF and WebP variants
 plus the original fallback. The generator only references variant files that
 exist, so a missing variant falls back to the original image.
 
-The 1200px variants `npm run optimize` writes are sized for the largest thing
-the layout ever shows. The page is capped at 480px wide and the gallery is
-capped again at 42svh, so the product image renders at roughly 1000-1300 device
-pixels even on a 3x phone — a second, sharper tier was measured and does not
-change what any tested device displays.
+Two tiers exist for the gallery. The 1200px variants are what the markup ships
+and what the LCP preload points at. The first two gallery stills of each product
+also get a sharper `-hq` pair (2000px cap, AVIF q72 / WebP q88) which the page
+swaps in during idle time after `load`, so the extra bytes never touch LCP —
+roughly +80-100KB per page, and only the two slides a buyer actually dwells on.
+The animation is excluded: it is 119 frames, so every extra pixel of width is
+paid 119 times.
+
+Widen that to more slides by raising `HQ_SLIDES` in `tools/optimize-images.js`
+and re-running `npm run optimize`. Be aware the gain is bounded — the page is
+capped at 480px wide and the gallery again at 42svh, so the light tier already
+meets device pixels on most phones; the sources are 1500x1500, so `-hq` tops out
+there too.
 
 The confetti dots behind the purple banner are two tiled layers of
 `2023/10/Dots-1.png`. They drift on a timer everywhere, and on Chrome 115+ /
