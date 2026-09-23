@@ -273,6 +273,8 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
 .sticky-pad.is-visible{height:84px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important}}
 </style>
+<script>window.rttInitWooAttribution=function(){try{window.sbjs&&sbjs.init({lifetime:0.00001,session_length:30,base64:false,timezone_offset:'0',domain:"rockthetreatment.com"});}catch(e){}};</script>
+<script src="https://www.rockthetreatment.com/wp-content/plugins/woocommerce/assets/js/sourcebuster/sourcebuster.min.js" async onload="rttInitWooAttribution()"></script>
 </head>
 <body>
 <div class="wrap">
@@ -471,7 +473,7 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
   var GALLERY = [{"a":"/assets/uploads/2018/04/Women-Large-Chemo-Basket-Main.avif","w":"/assets/uploads/2018/04/Women-Large-Chemo-Basket-Main.webp","f":"/assets/uploads/2018/04/Women-Large-Chemo-Basket-Main.jpg","ha":"/assets/uploads/2018/04/Women-Large-Chemo-Basket-Main-hq.avif","hw":"/assets/uploads/2018/04/Women-Large-Chemo-Basket-Main-hq.webp","hf":"/assets/uploads/2018/04/Women-Large-Chemo-Basket-Main.jpg"},{"a":"","w":"/assets/uploads/2018/04/Womens-Chemo-Large-Animation-Opt.webp","f":"/assets/uploads/2018/04/Womens-Chemo-Large-Animation-Opt-still.jpg","ha":"","hw":"","hf":""},{"a":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_dry-mouth.avif","w":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_dry-mouth.webp","f":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_dry-mouth.jpg","ha":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_dry-mouth-hq.avif","hw":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_dry-mouth-hq.webp","hf":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_dry-mouth.jpg"},{"a":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_nausea.avif","w":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_nausea.webp","f":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_nausea.jpg","ha":"","hw":"","hf":""},{"a":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_engaging-mind.avif","w":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_engaging-mind.webp","f":"/assets/uploads/2018/04/Womens_Chemo_Product-Tiles_engaging-mind.jpg","ha":"","hw":"","hf":""}];
   var STORE_BASE = "https://www.rockthetreatment.com";
   var CURRENCY = 'USD';
-  var ITEM_CATEGORY = "Chemo Care Packages";
+  var ITEM = {"item_id":"794775969371","item_name":"Large Women's Chemo Care Package","sku":"794775969371","price":169.99,"stocklevel":null,"stockstatus":"instock","google_business_vertical":"retail","item_category":"Chemo Care Packages","item_category2":"Women's Chemo Care Packages","id":"794775969371"};
   window.dataLayer = window.dataLayer || [];
 
   // Custom (non-ecommerce) events — flat parameters.
@@ -481,8 +483,12 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
 
   // GA4 ecommerce events. The items array is what populates GA4's ecommerce
   // reports (item revenue, cart-to-view rate); value on its own leaves them
-  // empty. Pushing ecommerce:null first clears the previous ecommerce object
-  // so its fields cannot bleed into the next event.
+  // empty. Each item is built the way GTM4WP builds it on www (see
+  // gtm4wpItem in generate.js), so a view_item here and the purchase on the
+  // store land on the same GA4 item. Pushing ecommerce:null first clears
+  // the previous ecommerce object so its fields cannot bleed into the next
+  // event. product_id stays the WooCommerce post ID: it is what Facebook for
+  // WooCommerce uses as the Meta content ID.
   function trackEcommerce(eventName, quantity, detail){
     window.dataLayer.push({ecommerce: null});
     window.dataLayer.push(Object.assign({
@@ -492,15 +498,7 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
       ecommerce: {
         currency: CURRENCY,
         value: Math.round(UNIT_PRICE * quantity * 100) / 100,
-        items: [{
-          item_id: String(PRODUCT_ID),
-          item_name: PRODUCT_NAME,
-          item_brand: 'Rock The Treatment',
-          item_category: ITEM_CATEGORY,
-          price: UNIT_PRICE,
-          quantity: quantity,
-          currency: CURRENCY
-        }]
+        items: [Object.assign({}, ITEM, {quantity: quantity})]
       }
     }, detail || {}));
   }

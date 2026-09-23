@@ -273,6 +273,8 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
 .sticky-pad.is-visible{height:84px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important}}
 </style>
+<script>window.rttInitWooAttribution=function(){try{window.sbjs&&sbjs.init({lifetime:0.00001,session_length:30,base64:false,timezone_offset:'0',domain:"rockthetreatment.com"});}catch(e){}};</script>
+<script src="https://www.rockthetreatment.com/wp-content/plugins/woocommerce/assets/js/sourcebuster/sourcebuster.min.js" async onload="rttInitWooAttribution()"></script>
 </head>
 <body>
 <div class="wrap">
@@ -454,7 +456,7 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
   var GALLERY = [{"a":"/assets/uploads/2018/04/Radiation-Care-Package-Main.avif","w":"/assets/uploads/2018/04/Radiation-Care-Package-Main.webp","f":"/assets/uploads/2018/04/Radiation-Care-Package-Main.jpg","ha":"/assets/uploads/2018/04/Radiation-Care-Package-Main-hq.avif","hw":"/assets/uploads/2018/04/Radiation-Care-Package-Main-hq.webp","hf":"/assets/uploads/2018/04/Radiation-Care-Package-Main.jpg"},{"a":"/assets/uploads/2018/04/updated-radiation-tile-green.avif","w":"/assets/uploads/2018/04/updated-radiation-tile-green.webp","f":"/assets/uploads/2018/04/updated-radiation-tile-green.jpg","ha":"/assets/uploads/2018/04/updated-radiation-tile-green-hq.avif","hw":"/assets/uploads/2018/04/updated-radiation-tile-green-hq.webp","hf":"/assets/uploads/2018/04/updated-radiation-tile-green.jpg"},{"a":"/assets/uploads/2018/04/Radiation_Product-Tiles_focus-fun-energy_rev.avif","w":"/assets/uploads/2018/04/Radiation_Product-Tiles_focus-fun-energy_rev.webp","f":"/assets/uploads/2018/04/Radiation_Product-Tiles_focus-fun-energy_rev.jpg","ha":"","hw":"","hf":""}];
   var STORE_BASE = "https://www.rockthetreatment.com";
   var CURRENCY = 'USD';
-  var ITEM_CATEGORY = "Radiation Care Packages";
+  var ITEM = {"item_id":"794775969395","item_name":"Radiation Care Package","sku":"794775969395","price":139.99,"stocklevel":null,"stockstatus":"instock","google_business_vertical":"retail","item_category":"Radiation Care Packages","id":"794775969395"};
   window.dataLayer = window.dataLayer || [];
 
   // Custom (non-ecommerce) events — flat parameters.
@@ -464,8 +466,12 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
 
   // GA4 ecommerce events. The items array is what populates GA4's ecommerce
   // reports (item revenue, cart-to-view rate); value on its own leaves them
-  // empty. Pushing ecommerce:null first clears the previous ecommerce object
-  // so its fields cannot bleed into the next event.
+  // empty. Each item is built the way GTM4WP builds it on www (see
+  // gtm4wpItem in generate.js), so a view_item here and the purchase on the
+  // store land on the same GA4 item. Pushing ecommerce:null first clears
+  // the previous ecommerce object so its fields cannot bleed into the next
+  // event. product_id stays the WooCommerce post ID: it is what Facebook for
+  // WooCommerce uses as the Meta content ID.
   function trackEcommerce(eventName, quantity, detail){
     window.dataLayer.push({ecommerce: null});
     window.dataLayer.push(Object.assign({
@@ -475,15 +481,7 @@ h2{font-weight:800;font-size:16px;color:var(--text);margin:22px 0 10px}
       ecommerce: {
         currency: CURRENCY,
         value: Math.round(UNIT_PRICE * quantity * 100) / 100,
-        items: [{
-          item_id: String(PRODUCT_ID),
-          item_name: PRODUCT_NAME,
-          item_brand: 'Rock The Treatment',
-          item_category: ITEM_CATEGORY,
-          price: UNIT_PRICE,
-          quantity: quantity,
-          currency: CURRENCY
-        }]
+        items: [Object.assign({}, ITEM, {quantity: quantity})]
       }
     }, detail || {}));
   }

@@ -49,6 +49,33 @@ function cartUrlFor(productId, quantity) {
   return `${wwwBase}/cart/?add-to-cart=${productId}&quantity=${quantity == null ? 1 : quantity}`;
 }
 
+// GA4 item in the shape GTM4WP pushes on www.rockthetreatment.com, which is
+// set to use the SKU as item_id. Matching it field for field means the
+// container's GA4 and Google Ads tags see the same item whichever host the
+// event came from. sku, wooCategories and stockStatus come from the store via
+// `npm run sync`; a product without them falls back to the post ID and the
+// old category, and the build says so.
+function gtm4wpItem(product, price, isRadiation) {
+  const itemId = product.sku || String(product.id);
+  if (!product.sku) console.warn(`⚠️  ${product.slug}: no sku in product-data.json (run npm run sync); item_id falls back to ${itemId}, which will not match www`);
+  const cats = product.wooCategories && product.wooCategories.length
+    ? product.wooCategories
+    : [isRadiation ? 'Radiation Care Packages' : 'Chemo Care Packages'];
+  const item = {
+    item_id: itemId,
+    item_name: product.title,
+    sku: itemId,
+    price,
+    stocklevel: null,
+    stockstatus: product.stockStatus || 'instock',
+    google_business_vertical: 'retail',
+    item_category: cats[0],
+  };
+  if (cats[1]) item.item_category2 = cats[1];
+  item.id = itemId;
+  return item;
+}
+
 function escHtml(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -226,6 +253,28 @@ gtag('set','url_passthrough',true);
 
 const gtmHead = GTM_ID ? consentHead + `<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');</script>\n` : '';
 const gtmBody = GTM_ID ? `<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${GTM_ID}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>\n` : '';
+
+// ---- WooCommerce order attribution -------------------------------------------
+// WooCommerce records each order's source (Origin in the orders list) from
+// sourcebuster.js cookies, which www writes on .rockthetreatment.com. The
+// add-to-cart link does carry utm_* / gclid across, but www then redirects to
+// a bare /checkout/, so the store's own script sees no campaign and a
+// referrer on its own domain, and logs the order as Direct.
+//
+// Running the same script here, with the store's settings, records the
+// campaign on the landing page instead. When the visitor reaches /checkout/
+// inside the same 30-minute session, sourcebuster finds a session cookie and
+// an internal referrer and keeps what was recorded here; that is what
+// WooCommerce saves with the order. Settings mirror the wc_order_attribution
+// params on www: lifetime 0.00001 months rounds to 0 minutes, i.e. browser-
+// session cookies. The one addition is domain: left to itself sourcebuster
+// would scope the cookies to m.rockthetreatment.com, where www cannot read
+// them. The script is loaded from the store's own WooCommerce install so its
+// cookie format always matches the version that reads it at checkout; if it
+// fails to load, nothing else on the page depends on it.
+const COOKIE_DOMAIN = new URL(wwwBase).hostname.replace(/^www\./, '');
+const wooAttributionHead = `<script>window.rttInitWooAttribution=function(){try{window.sbjs&&sbjs.init({lifetime:0.00001,session_length:30,base64:false,timezone_offset:'0',domain:${JSON.stringify(COOKIE_DOMAIN)}});}catch(e){}};</script>
+<script src="${wwwBase}/wp-content/plugins/woocommerce/assets/js/sourcebuster/sourcebuster.min.js" async onload="rttInitWooAttribution()"></script>\n`;
 
 const FONTS = 'https://fonts.googleapis.com/css2?family=Catamaran:wght@400;500;600;700;800&display=swap';
 const FAVICON = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%20100%27%3E%3Crect%20width=%27100%27%20height=%27100%27%20rx=%2720%27%20fill=%27%235ba346%27/%3E%3Ctext%20x=%2750%27%20y=%2764%27%20font-family=%27Georgia,serif%27%20font-size=%2734%27%20font-weight=%27700%27%20text-anchor=%27middle%27%20fill=%27%23fff%27%3ERTT%3C/text%3E%3C/svg%3E";
@@ -554,6 +603,7 @@ function generatePage(product) {
   const priceNum = parsePrice(price);
   const freeShipping = priceNum >= 200;
   const cartUrl = cartUrlFor(product.id, 1);
+  const ecommerceItem = gtm4wpItem(product, priceNum, isRadiation);
   const totalItems = product.categories.reduce((n, c) => n + c.items.length, 0);
   const stickyCart = ui.stickyCart !== false;
 
@@ -684,7 +734,7 @@ ${cat.items.map(it => `      <li>${picture(itemImg(it.name), { alt: '', width: 4
 <link rel="preload" as="image" href="${heroV && heroV.avif ? heroV.avif : heroUrl}"${heroV && heroV.avif ? ' type="image/avif"' : ''} fetchpriority="high">
 <link href="${FONTS}" rel="stylesheet">
 <style>${SHARED_CSS}${PRODUCT_CSS}</style>
-${gtmHead}</head>
+${gtmHead}${wooAttributionHead}</head>
 <body>
 ${gtmBody}<div class="wrap">
 ${topbar}
@@ -739,7 +789,7 @@ ${stickyHtml}
   var GALLERY = ${JSON.stringify(gallery)};
   var STORE_BASE = ${JSON.stringify(wwwBase)};
   var CURRENCY = 'USD';
-  var ITEM_CATEGORY = ${JSON.stringify(isRadiation ? 'Radiation Care Packages' : 'Chemo Care Packages')};
+  var ITEM = ${JSON.stringify(ecommerceItem)};
   window.dataLayer = window.dataLayer || [];
 
   // Custom (non-ecommerce) events — flat parameters.
@@ -749,8 +799,12 @@ ${stickyHtml}
 
   // GA4 ecommerce events. The items array is what populates GA4's ecommerce
   // reports (item revenue, cart-to-view rate); value on its own leaves them
-  // empty. Pushing ecommerce:null first clears the previous ecommerce object
-  // so its fields cannot bleed into the next event.
+  // empty. Each item is built the way GTM4WP builds it on www (see
+  // gtm4wpItem in generate.js), so a view_item here and the purchase on the
+  // store land on the same GA4 item. Pushing ecommerce:null first clears
+  // the previous ecommerce object so its fields cannot bleed into the next
+  // event. product_id stays the WooCommerce post ID: it is what Facebook for
+  // WooCommerce uses as the Meta content ID.
   function trackEcommerce(eventName, quantity, detail){
     window.dataLayer.push({ecommerce: null});
     window.dataLayer.push(Object.assign({
@@ -760,15 +814,7 @@ ${stickyHtml}
       ecommerce: {
         currency: CURRENCY,
         value: Math.round(UNIT_PRICE * quantity * 100) / 100,
-        items: [{
-          item_id: String(PRODUCT_ID),
-          item_name: PRODUCT_NAME,
-          item_brand: 'Rock The Treatment',
-          item_category: ITEM_CATEGORY,
-          price: UNIT_PRICE,
-          quantity: quantity,
-          currency: CURRENCY
-        }]
+        items: [Object.assign({}, ITEM, {quantity: quantity})]
       }
     }, detail || {}));
   }
@@ -971,7 +1017,7 @@ function generateIndex() {
 .foot{text-align:center;padding:0 16px 28px;font-size:12px;color:var(--soft)}
 .foot a{font-weight:600}
 </style>
-${gtmHead}</head>
+${gtmHead}${wooAttributionHead}</head>
 <body>
 ${gtmBody}<div class="wrap">
   <div class="topbar">Free shipping over $200 · Flat rate shipping from $4.99</div>
