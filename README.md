@@ -126,6 +126,11 @@ of stock or not purchasable (its Add to Cart link would fail on www), when
 product on sale. The build stays offline: run the sync, rebuild, and commit
 both. `npm run sync -- --check` exits non-zero if the data has drifted.
 
+`sku` is recorded but not yet used by the pages. GTM4WP on www sends the SKU
+as the GA4 `item_id`, while these pages send the post ID; switching them to the
+SKU waits until the container's Meta tags build content IDs from `product_id`
+rather than `items[].item_id`.
+
 ### Opt-in promo elements
 
 The 1b mockup showed a strike-through price, a "ships today" countdown, and a
@@ -228,22 +233,10 @@ Every event carries `product_id` and `product_name` at the top level.
 ### GA4 ecommerce events
 
 `view_item` and `add_to_cart` use GA4's ecommerce shape: an `ecommerce` object
-holding `currency`, `value` and a one-entry `items` array. The `items` array is
-what populates GA4's ecommerce reports — item revenue, cart-to-view rate,
-product performance. A bare `value` leaves those reports empty.
-
-Each item is built exactly the way GTM4WP builds it on www, which is set to use
-the SKU as the item ID: `item_id` and `id` (the SKU), `item_name`, `sku`,
-`price`, `stocklevel`, `stockstatus`, `google_business_vertical`,
-`item_category` and `item_category2`, plus `quantity`. Both sites feed the same
-GTM container, so a view here and the purchase on the store land on the same
-GA4 item. The SKU and categories come from `npm run sync`; a product without a
-`sku` falls back to its post ID and the build prints a warning.
-
-The top-level `product_id` stays the WooCommerce post ID, because that is the
-content ID Facebook for WooCommerce uses on www (and so the one the Meta
-catalog knows). Meta tags in the container should read `product_id`, not
-`items[].item_id`, which is now the SKU.
+holding `currency`, `value` and a one-entry `items` array (`item_id`,
+`item_name`, `item_brand`, `item_category`, `price`, `quantity`, `currency`).
+The `items` array is what populates GA4's ecommerce reports — item revenue,
+cart-to-view rate, product performance. A bare `value` leaves those reports empty.
 
 Each is preceded by a `{ecommerce: null}` push, the standard GTM idiom for
 clearing the previous ecommerce object so its fields cannot bleed into the next

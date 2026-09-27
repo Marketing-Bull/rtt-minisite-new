@@ -49,33 +49,6 @@ function cartUrlFor(productId, quantity) {
   return `${wwwBase}/cart/?add-to-cart=${productId}&quantity=${quantity == null ? 1 : quantity}`;
 }
 
-// GA4 item in the shape GTM4WP pushes on www.rockthetreatment.com, which is
-// set to use the SKU as item_id. Matching it field for field means the
-// container's GA4 and Google Ads tags see the same item whichever host the
-// event came from. sku, wooCategories and stockStatus come from the store via
-// `npm run sync`; a product without them falls back to the post ID and the
-// old category, and the build says so.
-function gtm4wpItem(product, price, isRadiation) {
-  const itemId = product.sku || String(product.id);
-  if (!product.sku) console.warn(`⚠️  ${product.slug}: no sku in product-data.json (run npm run sync); item_id falls back to ${itemId}, which will not match www`);
-  const cats = product.wooCategories && product.wooCategories.length
-    ? product.wooCategories
-    : [isRadiation ? 'Radiation Care Packages' : 'Chemo Care Packages'];
-  const item = {
-    item_id: itemId,
-    item_name: product.title,
-    sku: itemId,
-    price,
-    stocklevel: null,
-    stockstatus: product.stockStatus || 'instock',
-    google_business_vertical: 'retail',
-    item_category: cats[0],
-  };
-  if (cats[1]) item.item_category2 = cats[1];
-  item.id = itemId;
-  return item;
-}
-
 function escHtml(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -603,7 +576,6 @@ function generatePage(product) {
   const priceNum = parsePrice(price);
   const freeShipping = priceNum >= 200;
   const cartUrl = cartUrlFor(product.id, 1);
-  const ecommerceItem = gtm4wpItem(product, priceNum, isRadiation);
   const totalItems = product.categories.reduce((n, c) => n + c.items.length, 0);
   const stickyCart = ui.stickyCart !== false;
 
@@ -789,7 +761,7 @@ ${stickyHtml}
   var GALLERY = ${JSON.stringify(gallery)};
   var STORE_BASE = ${JSON.stringify(wwwBase)};
   var CURRENCY = 'USD';
-  var ITEM = ${JSON.stringify(ecommerceItem)};
+  var ITEM_CATEGORY = ${JSON.stringify(isRadiation ? 'Radiation Care Packages' : 'Chemo Care Packages')};
   window.dataLayer = window.dataLayer || [];
 
   // Custom (non-ecommerce) events — flat parameters.
@@ -799,12 +771,8 @@ ${stickyHtml}
 
   // GA4 ecommerce events. The items array is what populates GA4's ecommerce
   // reports (item revenue, cart-to-view rate); value on its own leaves them
-  // empty. Each item is built the way GTM4WP builds it on www (see
-  // gtm4wpItem in generate.js), so a view_item here and the purchase on the
-  // store land on the same GA4 item. Pushing ecommerce:null first clears
-  // the previous ecommerce object so its fields cannot bleed into the next
-  // event. product_id stays the WooCommerce post ID: it is what Facebook for
-  // WooCommerce uses as the Meta content ID.
+  // empty. Pushing ecommerce:null first clears the previous ecommerce object
+  // so its fields cannot bleed into the next event.
   function trackEcommerce(eventName, quantity, detail){
     window.dataLayer.push({ecommerce: null});
     window.dataLayer.push(Object.assign({
@@ -814,7 +782,15 @@ ${stickyHtml}
       ecommerce: {
         currency: CURRENCY,
         value: Math.round(UNIT_PRICE * quantity * 100) / 100,
-        items: [Object.assign({}, ITEM, {quantity: quantity})]
+        items: [{
+          item_id: String(PRODUCT_ID),
+          item_name: PRODUCT_NAME,
+          item_brand: 'Rock The Treatment',
+          item_category: ITEM_CATEGORY,
+          price: UNIT_PRICE,
+          quantity: quantity,
+          currency: CURRENCY
+        }]
       }
     }, detail || {}));
   }

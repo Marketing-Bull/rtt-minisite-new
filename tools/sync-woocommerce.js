@@ -2,8 +2,9 @@
 // Pull the store-owned facts for each product from the live WooCommerce Store
 // API and write them into product-data.json:
 //
-//   sku            what GTM4WP on www sends as item_id, so the minisite's
-//                  view_item / add_to_cart items match the store's purchase
+//   sku            what GTM4WP on www sends as the GA4 item_id. Recorded
+//                  now; the pages still send the post ID until the GTM Meta
+//                  tags read product_id instead of items[].item_id
 //   price          the live price, so the page, the cart and GA4 agree
 //   wooCategories  the store's category names, in the order GTM4WP uses for
 //                  item_category / item_category2
@@ -103,7 +104,7 @@ function patchText(text, data) {
       }
     }
 
-    if (!next.sku) warnings.push(`${product.slug}: no SKU in WooCommerce; the page falls back to the post ID (${product.id}), which will not match www's items`);
+    if (!next.sku) warnings.push(`${product.slug}: no SKU in WooCommerce, so www's GTM4WP items for it use the post ID (${product.id})`);
     if (!next.purchasable) warnings.push(`${product.slug}: not purchasable on www; its Add To Cart link will fail`);
     if (next.stockStatus === 'outofstock') warnings.push(`${product.slug}: out of stock on www; its Add To Cart link will fail`);
     const display = product.mobileUi && product.mobileUi.displayPrice;
