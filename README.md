@@ -43,6 +43,7 @@ Wrangler serves the site at `http://localhost:8787` by default.
 | `npm run check` | Verify every local image/link in the generated pages exists |
 | `npm run preview` | Run the Cloudflare Worker locally |
 | `npm run optimize` | Generate AVIF/WebP image variants with Sharp |
+| `npm run sync` | Update SKU, price, categories and stock in `product-data.json` from the live store (`-- --check` to only report) |
 | `npm run deploy` | Deploy the static-assets Worker with Wrangler |
 
 ## Source and build workflow
@@ -72,6 +73,7 @@ public/                  Generated site and self-hosted image assets
 public/_headers          Cache and security headers
 tools/check-links.js     Post-build check that all local references resolve
 tools/optimize-images.js AVIF/WebP variant generator (build-time only, needs Sharp)
+tools/sync-woocommerce.js Pulls SKU, price, categories and stock from the WooCommerce Store API
 wrangler.jsonc           Cloudflare static-assets Worker configuration
 ```
 
@@ -90,7 +92,7 @@ desktop site.
 | Header (dark gray, large logo) | Shop link to the hub, cart link to the store |
 | Gallery, rating row, thumbnails | `heroImage`, then `mobileUi.animationImage` (box-opening GIF) if set, then the `galleryImages` package tiles; `rating`, `reviewCount` |
 | Title + overview chips | `title`, `categories[].name` (leading "For " stripped) |
-| Price and Add to Cart (above the fold) | `mobileUi.displayPrice` or `price`; `id` → `/cart/?add-to-cart=<id>&quantity=1` (quantity is changed in the store cart) |
+| Price and Add to Cart (above the fold) | `mobileUi.displayPrice` or `price` (synced from the store); `id` → `/cart/?add-to-cart=<id>&quantity=1` (quantity is changed in the store cart) |
 | Stat tiles | item count from `categories`, then `rating` with `reviewCount`, then ship time |
 | Celebration Bell note | Free with any purchase, ordered separately; the link opens a dialog explaining the bell, and falls back to `mobileUi.celebrationUrl` or `/bell/` without JS |
 | Packed with Purpose (side scroll) | `mobileUi.featuredItems`, falling back to the first six items |
@@ -114,6 +116,20 @@ of truth. Item images are self-hosted copies of the store's
 uploads (the store's image sitemaps at `/product-sitemap.xml` and
 `/post-sitemap.xml` are the quickest way to find a file by name); an item
 with no entry in `itemImages` renders as a placeholder tile.
+
+The store-owned facts are synced mechanically: `npm run sync` reads each
+product from the WooCommerce Store API (`/wp-json/wc/store/v1/products/<id>`)
+and rewrites only `sku`, `price`, `wooCategories`, `stockStatus` and
+`purchasable`, leaving the curated copy alone. It warns when a product is out
+of stock or not purchasable (its Add to Cart link would fail on www), when
+`mobileUi.displayPrice` overrides the live price, and when the store has the
+product on sale. The build stays offline: run the sync, rebuild, and commit
+both. `npm run sync -- --check` exits non-zero if the data has drifted.
+
+`sku` is recorded but not yet used by the pages. GTM4WP on www sends the SKU
+as the GA4 `item_id`, while these pages send the post ID; switching them to the
+SKU waits until the container's Meta tags build content IDs from `product_id`
+rather than `items[].item_id`.
 
 ### Opt-in promo elements
 
@@ -306,6 +322,34 @@ This covers every outbound store link, not just the cart buttons — the
 Celebration Bell link, "See more reviews", and the header and footer links all
 lead into the store, and a buyer entering through any of them is on the same
 conversion path and would otherwise arrive unattributed.
+
+The store has "Redirect to the cart page after successful addition" on, so the
+add-to-cart URL answers with a 302 to a bare `/checkout/` and these parameters
+stop there. GA4, Google Ads and Meta are unaffected (they carry the click in
+cookies on `.rockthetreatment.com`); WooCommerce's own attribution is handled
+by the next section.
+
+### WooCommerce order attribution
+
+WooCommerce saves each order's source (the Origin column) from
+sourcebuster.js cookies that www writes on `.rockthetreatment.com`. With the
+parameters dropped by the redirect, the store's script would see a plain
+`/checkout/` with a referrer on its own domain and record the order as Direct.
+
+So the pages run the same script at landing, loaded from the store's own
+WooCommerce install so its cookie format always matches the version that reads
+it, with the store's settings (browser-session cookies, 30-minute session) and
+`domain: "rockthetreatment.com"`. Without that domain sourcebuster would scope
+its cookies to `m.rockthetreatment.com`, where www cannot see them. It records
+the campaign (`utm_*`, or `gclid` as google / cpc) on the landing page; when the
+visitor reaches checkout inside the same session, sourcebuster on www finds the
+session cookie and an internal referrer and keeps that record. WooCommerce then
+stores `utm` / `google` / `cpc` / the campaign, with the landing page as the
+session entry.
+
+`fbclid` is not a campaign parameter to sourcebuster: give Meta ads `utm_*`
+tags (Meta's URL parameters setting) or those orders are recorded by referrer
+instead.
 
 ## Consent Mode v2
 

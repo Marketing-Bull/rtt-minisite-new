@@ -227,6 +227,28 @@ gtag('set','url_passthrough',true);
 const gtmHead = GTM_ID ? consentHead + `<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');</script>\n` : '';
 const gtmBody = GTM_ID ? `<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${GTM_ID}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>\n` : '';
 
+// ---- WooCommerce order attribution -------------------------------------------
+// WooCommerce records each order's source (Origin in the orders list) from
+// sourcebuster.js cookies, which www writes on .rockthetreatment.com. The
+// add-to-cart link does carry utm_* / gclid across, but www then redirects to
+// a bare /checkout/, so the store's own script sees no campaign and a
+// referrer on its own domain, and logs the order as Direct.
+//
+// Running the same script here, with the store's settings, records the
+// campaign on the landing page instead. When the visitor reaches /checkout/
+// inside the same 30-minute session, sourcebuster finds a session cookie and
+// an internal referrer and keeps what was recorded here; that is what
+// WooCommerce saves with the order. Settings mirror the wc_order_attribution
+// params on www: lifetime 0.00001 months rounds to 0 minutes, i.e. browser-
+// session cookies. The one addition is domain: left to itself sourcebuster
+// would scope the cookies to m.rockthetreatment.com, where www cannot read
+// them. The script is loaded from the store's own WooCommerce install so its
+// cookie format always matches the version that reads it at checkout; if it
+// fails to load, nothing else on the page depends on it.
+const COOKIE_DOMAIN = new URL(wwwBase).hostname.replace(/^www\./, '');
+const wooAttributionHead = `<script>window.rttInitWooAttribution=function(){try{window.sbjs&&sbjs.init({lifetime:0.00001,session_length:30,base64:false,timezone_offset:'0',domain:${JSON.stringify(COOKIE_DOMAIN)}});}catch(e){}};</script>
+<script src="${wwwBase}/wp-content/plugins/woocommerce/assets/js/sourcebuster/sourcebuster.min.js" async onload="rttInitWooAttribution()"></script>\n`;
+
 const FONTS = 'https://fonts.googleapis.com/css2?family=Catamaran:wght@400;500;600;700;800&display=swap';
 const FAVICON = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20100%20100%27%3E%3Crect%20width=%27100%27%20height=%27100%27%20rx=%2720%27%20fill=%27%235ba346%27/%3E%3Ctext%20x=%2750%27%20y=%2764%27%20font-family=%27Georgia,serif%27%20font-size=%2734%27%20font-weight=%27700%27%20text-anchor=%27middle%27%20fill=%27%23fff%27%3ERTT%3C/text%3E%3C/svg%3E";
 
@@ -684,7 +706,7 @@ ${cat.items.map(it => `      <li>${picture(itemImg(it.name), { alt: '', width: 4
 <link rel="preload" as="image" href="${heroV && heroV.avif ? heroV.avif : heroUrl}"${heroV && heroV.avif ? ' type="image/avif"' : ''} fetchpriority="high">
 <link href="${FONTS}" rel="stylesheet">
 <style>${SHARED_CSS}${PRODUCT_CSS}</style>
-${gtmHead}</head>
+${gtmHead}${wooAttributionHead}</head>
 <body>
 ${gtmBody}<div class="wrap">
 ${topbar}
@@ -971,7 +993,7 @@ function generateIndex() {
 .foot{text-align:center;padding:0 16px 28px;font-size:12px;color:var(--soft)}
 .foot a{font-weight:600}
 </style>
-${gtmHead}</head>
+${gtmHead}${wooAttributionHead}</head>
 <body>
 ${gtmBody}<div class="wrap">
   <div class="topbar">Free shipping over $200 · Flat rate shipping from $4.99</div>
