@@ -706,7 +706,7 @@ ${cat.items.map(it => `      <li>${picture(itemImg(it.name), { alt: '', width: 4
 <link rel="preload" as="image" href="${heroV && heroV.avif ? heroV.avif : heroUrl}"${heroV && heroV.avif ? ' type="image/avif"' : ''} fetchpriority="high">
 <link href="${FONTS}" rel="stylesheet">
 <style>${SHARED_CSS}${PRODUCT_CSS}</style>
-${gtmHead}${wooAttributionHead}</head>
+${gtmHead}${wooAttributionHead}<script defer src="/_vercel/insights/script.js"></script></head>
 <body>
 ${gtmBody}<div class="wrap">
 ${topbar}
@@ -993,7 +993,7 @@ function generateIndex() {
 .foot{text-align:center;padding:0 16px 28px;font-size:12px;color:var(--soft)}
 .foot a{font-weight:600}
 </style>
-${gtmHead}${wooAttributionHead}</head>
+${gtmHead}${wooAttributionHead}<script defer src="/_vercel/insights/script.js"></script></head>
 <body>
 ${gtmBody}<div class="wrap">
   <div class="topbar">Free shipping over $200 · Flat rate shipping from $4.99</div>
