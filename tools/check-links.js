@@ -21,6 +21,8 @@ for (const page of pages) {
   for (const m of html.matchAll(/url\((['"]?)([^'")]+)\1\)/g)) refs.add(m[2]);
   for (const ref of refs) {
     if (/^(https?:|data:|mailto:|tel:|#)/.test(ref)) continue;
+    // Served by Vercel at the edge, not a file in public/.
+    if (ref.startsWith('/_vercel/')) continue;
     const rel = ref.replace(/^\.\//, '').replace(/^\//, '').replace(/[?#].*$/, '');
     checked += 1;
     if (!fs.existsSync(path.join(pub, rel))) {
